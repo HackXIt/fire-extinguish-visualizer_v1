@@ -3,15 +3,18 @@
     {{ instructions }} <br/>
     <boardSelect :variants="variants"/>
     <br />
+    <configOptions v-for="variant in variants" :key="variant.id" :variant="variant"/>
   </div>
 </template>
 
 <script>
 import boardSelect from './boardSelect.vue'
+import configOptions from './configOptions.vue'
 import { eventBus } from '@/main.js'
 export default {
     components: {
-        boardSelect
+        boardSelect,
+        configOptions
     },
     data() {
         return {
@@ -45,8 +48,6 @@ export default {
         addVariantArray(selection) {
             console.log(variants[selection])
         }
-    },
-    computed: {
     },
     mounted() {
         eventBus.$on('board-submitted', board => {
