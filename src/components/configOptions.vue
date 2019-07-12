@@ -1,36 +1,36 @@
 <template>
   <div id="configOptions" v-if="notEmpty">
-    <ul>
-      <li v-for="n in variant.amount" :key="n">TEST</li>
-    </ul>
+    <div v-for="(submission, index) in submissions" :key="index">
+
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    variant: {
-      type: Object,
+    submissions: {
+      type: Array,
       required: true
     }
   },
+  components: {
+    /*
+    IM8,
+    OM8,
+    VDS
+    */
+  },
   computed: {
     notEmpty() {
-      if (this.variant.amount > 0) return true;
-      else return false;
+      return this.submissions.length > 0 ? true : false;
+    },
+    element(type) {
+      return false;
     }
   },
   data() {
     return {
-      im8: {
-        options: {}
-      },
-      om8: {
-        options: {}
-      },
-      vds: {
-        options: {}
-      }
     };
   }
 };
