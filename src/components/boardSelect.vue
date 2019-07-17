@@ -15,7 +15,15 @@
           >{{ variant.placeholder }}</option
         >
       </select>
-      <p v-if="selected">UPLOAD OF IMAGES GOES HERE (DEBUG)</p>
+      <p v-if="selected">
+        UPLOAD OF IMAGES GOES HERE (DEBUG)
+        <img :src="variantSelection.imgActive" />
+        <img :src="variantSelection.imgPassive" />
+        <img
+          v-if="variantSelection.imgPreActive"
+          :src="variantSelection.imgPreActive"
+        />
+      </p>
       <label
         class="error-msg"
         for="boardAmount"
@@ -45,6 +53,7 @@
 
 <script>
 import { eventBus } from "@/main.js";
+// import middleFinger from "@/assets/middle_finger.png"
 export default {
   props: {},
   data() {
@@ -62,31 +71,32 @@ export default {
           msg: "Amount missing!"
         }
       },
+      // NOTE https://www.flaticon.com/packs/hand-gestures-6
       variants: [
         {
           id: 1,
           placeholder: "Standard IM8 Inputs",
           rpiType: "output",
           boardType: "im8",
-          imgActive: "",
-          imgPassive: ""
+          imgActive: require("@/assets/middle_finger.png"),
+          imgPassive: require("@/assets/fist.png")
         },
         {
           id: 2,
           placeholder: "Standard OM8 Outputs",
           rpiType: "input",
           boardType: "om8",
-          imgActive: "",
-          imgPassive: ""
+          imgActive: require("@/assets/ok.png"),
+          imgPassive: require("@/assets/hand.png")
         },
         {
           id: 3,
           placeholder: "VDS IM8 Inputs",
           rpiType: "output",
           boardType: "vds",
-          imgActive: "",
-          imgPreActive: "",
-          imgPassive: ""
+          imgActive: require("@/assets/middle_finger.png"),
+          imgPreActive: require("@/assets/victory.png"),
+          imgPassive: require("@/assets/fist.png")
         }
       ],
       ports: [
@@ -162,7 +172,7 @@ export default {
           IO: []
         };
         for (var i = 1; i <= this.amount; i++) {
-          boardSelection.IO.push(i)
+          boardSelection.IO.push(i);
         }
         this.ports[this.portSelection.id - 1].available = false;
         eventBus.$emit("submitted", boardSelection);
@@ -175,6 +185,9 @@ export default {
   computed: {
     selected() {
       return this.variantSelection ? true : false;
+    },
+    image() {
+      return this.variantSelection.imgActive
     }
   }
 };

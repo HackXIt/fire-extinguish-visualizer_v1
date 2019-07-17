@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="valueIsNumber">
-      <label v-if="preTextAvailable" v-text="preText"/>
-      <input 
+      <label v-if="preTextAvailable" v-text="preText" />
+      <input
         type="number"
         v-if="edit"
         v-model="valueLocal"
@@ -11,29 +11,30 @@
         min="1" max="8"
         v-focus
       />
-      <b v-else @click="edit = true;">
-        {{valueLocal}}
+      <b v-else @click="edit = true">
+        {{ valueLocal }}
       </b>
     </div>
     <div v-else>
-      <input type="text"
-            v-if="edit"
-            v-model="valueLocal"
-            @blur="changeValue()"
-            @keyup.enter="changeValue()"
-            v-focus
+      <input
+        type="text"
+        v-if="edit"
+        v-model="valueLocal"
+        @blur="changeValue()"
+        @keyup.enter="changeValue()"
+        v-focus
       />
-      <p v-else @click="edit = true;">
-        {{valueLocal}}
+      <p v-else @click="edit = true">
+        {{ valueLocal }}
       </p>
     </div>
   </div>
 </template>
 
 <script>
-  export default {
+export default {
   props: {
-    value: "",
+    value: null,
     valueIsNumber: {
       type: Boolean,
       required: false
@@ -44,14 +45,14 @@
     }
   },
   model: {
-    prop: 'value',
-    event: 'change'
+    prop: "value",
+    event: "change"
   },
-  data () {
-  return {
+  data() {
+    return {
       edit: false,
-      valueLocal: this.value,
-    }
+      valueLocal: this.value
+    };
   },
   watch: {
     value: function() {
@@ -61,32 +62,31 @@
   computed: {
     inputType() {
       if (this.valueIsNumber) {
-        return 'number'
+        return "number";
       } else {
-        return 'text'
+        return "text";
       }
     },
     preTextAvailable() {
-      if(this.preText) {
-        return true
+      if (this.preText) {
+        return true;
       } else {
-        return false
+        return false;
       }
     }
   },
   methods: {
     changeValue() {
-      this.edit = false
-      this.$emit('change', event.target.value)
+      this.edit = false;
+      this.$emit("change", event.target.value);
     }
   },
   directives: {
     focus: {
-      inserted (el) {
-        el.focus()
+      inserted(el) {
+        el.focus();
       }
     }
   }
-
-}
+};
 </script>

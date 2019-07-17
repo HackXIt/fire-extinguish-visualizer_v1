@@ -1,13 +1,12 @@
 <template>
   <div id="configOptions" v-if="notEmpty">
     <div v-for="(submission, index) in submissions" :key="index">
-      <click-to-edit 
-        v-model="submission.description"
-      />
-      <label v-if="duplicateValue(submission.IO)" v-text="warning"/>
+      <click-to-edit v-model="submission.description" />
+      <label v-if="duplicateValue(submission.IO)" v-text="warning" />
       <click-to-edit
-        v-for="n in submission.amount" :key="n"
-        v-model.number="submission.IO[n-1]"
+        v-for="n in submission.amount"
+        :key="n"
+        v-model.number="submission.IO[n - 1]"
         :valueIsNumber="true"
         :preText="submission.board.boardType.toUpperCase() + '-'"
       />
@@ -16,7 +15,7 @@
 </template>
 
 <script>
-import clickToEdit from "./clickToEdit.vue"
+import clickToEdit from "./clickToEdit.vue";
 export default {
   props: {
     submissions: {
@@ -34,21 +33,21 @@ export default {
   },
   methods: {
     duplicateValue(arr) {
-      // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-20.php
-      let object = {}
-      let result = []
+      // NOTE https://www.w3resource.com/javascript-exercises/javascript-array-exercise-20.php
+      let object = {};
       arr.forEach(item => {
-        if(!object[item]) object[item] = 0
-        object[item] += 1
-      })
+        if (!object[item]) object[item] = 0;
+        object[item] += 1;
+      });
       for (const prop in object) {
-        if(object[prop] >= 2) {
-          this.warning = "The IO-Pins shouldn't contain duplicates within the same board."
-          return true
+        if (object[prop] >= 2) {
+          this.warning =
+            "The IO-Pin Declarations cannot contain duplicates within the same board.";
+          return true;
         }
       }
-      this.warning = ""
-      return false
+      this.warning = "";
+      return false;
     }
   },
   computed: {
