@@ -8,7 +8,6 @@
 </template>
 
 <script>
-// TODO add Submissions to localStorage so that configOptions persists
 import boardSelect from "@/components/boardSelect.vue";
 import configOptions from "@/components/configOptions.vue";
 import { eventBus } from "@/main.js";
@@ -24,10 +23,19 @@ export default {
       submissions: []
     };
   },
-  methods: {
+  watch: {
+    submissions: {
+      handler(newSubmissions) {
+        console.debug("Watch-Handler for submissions fired (localStorage updated)");
+        const parsed = JSON.stringify(newSubmissions);
+        localStorage.setItem("submissions", parsed);
+      },
+      deep: true
+    }
   },
   mounted() {
-    eventBus.$on("submitted", board => {
+    eventBus.$on("new-submission", board => {
+      console.debug("new-submission event fired")
       if (this.submissions.length <= 4) {
         this.submissions.length === 0
           ? this.submissions.push(board)
@@ -36,23 +44,20 @@ export default {
         this.submissions.pop();
         this.submission.unshift(board);
       }
-      const parsed = JSON.stringify(this.submissions)
-      localStorage.setItem('submissions', parsed)
     });
     eventBus.$on("delete-submission", item => {
-      this.submissions.splice(item.index, 1)
-      const parsed = JSON.stringify(this.submissions)
-      localStorage.setItem('submissions', parsed)
-    })
+      console.debug("delete-submission event fired");
+      this.submissions.splice(item.index, 1);
+    });
     // NOTE Using localStorage to provide data on Reload
     //  Also to provide data to Visualization
     //  Client-Side Storage: https://vuejs.org/v2/cookbook/client-side-storage.html
-    if (localStorage.getItem('submissions')) {
+    if (localStorage.getItem("submissions")) {
       try {
-        this.submissions = JSON.parse(localStorage.getItem('submissions'))
-      } catch(e) {
+        this.submissions = JSON.parse(localStorage.getItem("submissions"));
+      } catch (e) {
         // NOTE Destroy data if invalid
-        localStorage.removeItem('submissions')
+        localStorage.removeItem("submissions");
       }
     }
   }

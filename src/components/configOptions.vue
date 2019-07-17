@@ -1,15 +1,15 @@
 <template>
   <div id="configOptions" v-if="notEmpty">
     <div v-for="(submission, index) in submissions" :key="index">
-      <button @click="removeSubmission(index)"
-        class="deleteButton"
-      ><img :src="require('@/assets/delete.png')">Delete</button>
-      <click-to-edit v-model="submission.description" />
+      <button @click="removeSubmission(index)" class="deleteButton">
+        <img :src="require('@/assets/delete.png')" />Delete
+      </button>
+      <click-to-edit v-model="submissions[index].description" />
       <label v-if="duplicateValue(submission.IO)" v-text="warning" />
       <click-to-edit
         v-for="n in submission.amount"
         :key="n"
-        v-model.number="submission.IO[n - 1]"
+        v-model.number="submissions[index].IO[n - 1]"
         :valueIsNumber="true"
         :preText="submission.board.boardType.toUpperCase() + '-'"
       />
@@ -29,11 +29,16 @@ export default {
   },
   components: {
     clickToEdit
-    /*
-    IM8,
-    OM8,
-    VDS
-    */
+  },
+  data() {
+    return {
+      warning: ""
+    };
+  },
+  computed: {
+    notEmpty() {
+      return this.submissions.length > 0 ? true : false;
+    }
   },
   methods: {
     duplicateValue(arr) {
@@ -55,21 +60,11 @@ export default {
     },
     removeSubmission(n) {
       let item = {
-        portId: this.submissions[n].id,
+        portId: this.submissions[n].port.id,
         index: n
-      }
-      eventBus.$emit('delete-submission', item)
+      };
+      eventBus.$emit("delete-submission", item);
     }
-  },
-  computed: {
-    notEmpty() {
-      return this.submissions.length > 0 ? true : false;
-    }
-  },
-  data() {
-    return {
-      warning: ""
-    };
   }
 };
 </script>

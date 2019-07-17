@@ -159,14 +159,14 @@ export default {
         this.error.num.val = true;
       } else {
         let boardSelection = {
-          id: this.variantSelection.id,
           description: `${this.variantSelection.boardType.toUpperCase()}`,
+          amount: this.amount,
           board: {
             rpiType: this.variantSelection.rpiType,
             boardType: this.variantSelection.boardType
           },
-          amount: this.amount,
           port: {
+            id: this.variantSelection.id,
             name: this.portSelection.name,
             gpio: this.portSelection.gpio
           },
@@ -176,7 +176,7 @@ export default {
           boardSelection.IO.push(i);
         }
         this.ports[this.portSelection.id - 1].available = false;
-        eventBus.$emit("submitted", boardSelection);
+        eventBus.$emit("new-submission", boardSelection);
         this.variantSelection = null;
         this.amount = null;
         this.portSelection = null;
@@ -189,9 +189,9 @@ export default {
     }
   },
   mounted() {
-    eventBus.$on('delete-submission', item => {
-      this.ports[item.portId-1].available = true
-    })
+    eventBus.$on("delete-submission", item => {
+      this.ports[item.portId - 1].available = true;
+    });
   }
 };
 </script>

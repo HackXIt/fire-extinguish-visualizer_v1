@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="valueIsNumber">
-      <label v-if="preTextAvailable" v-text="preText" />
+      <label v-if="preText" v-text="preText" />
       <input
         type="number"
         v-if="edit"
@@ -67,18 +67,12 @@ export default {
       } else {
         return "text";
       }
-    },
-    preTextAvailable() {
-      if (this.preText) {
-        return true;
-      } else {
-        return false;
-      }
     }
   },
   methods: {
     changeValue() {
       this.edit = false;
+      console.debug(`changeValue: ${event.target.value}`);
       this.$emit("change", event.target.value);
     }
   },
