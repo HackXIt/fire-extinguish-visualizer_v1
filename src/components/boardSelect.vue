@@ -43,7 +43,7 @@
         type="number"
         id="boardAmount"
         v-model.number="amount"
-        min="0"
+        min="1"
         max="8"
       />
       <input type="submit" value="generate" />
@@ -159,6 +159,7 @@ export default {
         this.error.num.val = true;
       } else {
         let boardSelection = {
+          id: this.variantSelection.id,
           description: `${this.variantSelection.boardType.toUpperCase()}`,
           board: {
             rpiType: this.variantSelection.rpiType,
@@ -185,10 +186,12 @@ export default {
   computed: {
     selected() {
       return this.variantSelection ? true : false;
-    },
-    image() {
-      return this.variantSelection.imgActive;
     }
+  },
+  mounted() {
+    eventBus.$on('delete-submission', item => {
+      this.ports[item.portId-1].available = true
+    })
   }
 };
 </script>

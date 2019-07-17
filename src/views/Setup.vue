@@ -24,7 +24,8 @@ export default {
       submissions: []
     };
   },
-  methods: {},
+  methods: {
+  },
   mounted() {
     eventBus.$on("submitted", board => {
       if (this.submissions.length <= 4) {
@@ -35,7 +36,25 @@ export default {
         this.submissions.pop();
         this.submission.unshift(board);
       }
+      const parsed = JSON.stringify(this.submissions)
+      localStorage.setItem('submissions', parsed)
     });
+    eventBus.$on("delete-submission", item => {
+      this.submissions.splice(item.index, 1)
+      const parsed = JSON.stringify(this.submissions)
+      localStorage.setItem('submissions', parsed)
+    })
+    // NOTE Using localStorage to provide data on Reload
+    //  Also to provide data to Visualization
+    //  Client-Side Storage: https://vuejs.org/v2/cookbook/client-side-storage.html
+    if (localStorage.getItem('submissions')) {
+      try {
+        this.submissions = JSON.parse(localStorage.getItem('submissions'))
+      } catch(e) {
+        // NOTE Destroy data if invalid
+        localStorage.removeItem('submissions')
+      }
+    }
   }
 };
 </script>

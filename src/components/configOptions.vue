@@ -1,6 +1,9 @@
 <template>
   <div id="configOptions" v-if="notEmpty">
     <div v-for="(submission, index) in submissions" :key="index">
+      <button @click="removeSubmission(index)"
+        class="deleteButton"
+      ><img :src="require('@/assets/delete.png')">Delete</button>
       <click-to-edit v-model="submission.description" />
       <label v-if="duplicateValue(submission.IO)" v-text="warning" />
       <click-to-edit
@@ -15,6 +18,7 @@
 </template>
 
 <script>
+import { eventBus } from "@/main.js";
 import clickToEdit from "./clickToEdit.vue";
 export default {
   props: {
@@ -48,6 +52,13 @@ export default {
       }
       this.warning = "";
       return false;
+    },
+    removeSubmission(n) {
+      let item = {
+        portId: this.submissions[n].id,
+        index: n
+      }
+      eventBus.$emit('delete-submission', item)
     }
   },
   computed: {
@@ -63,4 +74,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.deleteButton {
+  background-color: red; /* Green */
+  border: none;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+</style>
