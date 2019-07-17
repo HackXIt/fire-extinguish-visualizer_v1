@@ -8,7 +8,8 @@
         v-model="valueLocal"
         @blur="changeValue()"
         @keyup.enter="changeValue()"
-        min="1" max="8"
+        min="1"
+        max="8"
         v-focus
       />
       <b v-else @click="edit = true">

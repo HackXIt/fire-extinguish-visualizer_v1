@@ -16,7 +16,7 @@ export default {
   components: {
     boardSelect,
     configOptions
-    // delayElement
+    // TODO delayElement
   },
   data() {
     return {

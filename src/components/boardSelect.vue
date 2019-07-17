@@ -187,7 +187,7 @@ export default {
       return this.variantSelection ? true : false;
     },
     image() {
-      return this.variantSelection.imgActive
+      return this.variantSelection.imgActive;
     }
   }
 };
