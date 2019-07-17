@@ -149,6 +149,7 @@ export default {
         this.error.num.val = true;
       } else {
         let boardSelection = {
+          description: `${this.variantSelection.boardType.toUpperCase()}`,
           board: {
             rpiType: this.variantSelection.rpiType,
             boardType: this.variantSelection.boardType
@@ -157,11 +158,15 @@ export default {
           port: {
             name: this.portSelection.name,
             gpio: this.portSelection.gpio
-          }
+          },
+          IO: []
         };
+        for (var i = 1; i <= this.amount; i++) {
+          boardSelection.IO.push(i)
+        }
         this.ports[this.portSelection.id - 1].available = false;
         eventBus.$emit("submitted", boardSelection);
-        this.selection = null;
+        this.variantSelection = null;
         this.amount = null;
         this.portSelection = null;
       }
@@ -169,7 +174,7 @@ export default {
   },
   computed: {
     selected() {
-      return this.selection ? true : false;
+      return this.variantSelection ? true : false;
     }
   }
 };

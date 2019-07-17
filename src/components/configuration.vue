@@ -26,7 +26,12 @@ export default {
   methods: {},
   mounted() {
     eventBus.$on("submitted", board => {
-      this.submissions.push(board);
+      if (this.submissions.length <= 4) {
+        this.submissions.length = 0 ? this.submissions.push(board) : this.submissions.unshift(board);
+      } else {
+        this.submissions.pop();
+        this.submission.unshift(board)
+      }
     });
   }
 };
