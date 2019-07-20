@@ -6,7 +6,8 @@
     <p id="post">
       {{ post }}
     </p> -->
-    <p v-for="(submission, index) in submissions" :key="index">
+    <p v-for="(submission, index) in visuals" :key="index">
+      {{ index }}
       {{ submission.board.boardType }}
       {{ submission.port.name }}
       {{ submission.amount }}
@@ -44,13 +45,13 @@ export default {
   name: "Visualization",
   data() {
     return {
-      submissions: []
+      visuals: []
     };
   },
   mounted() {
     if (localStorage.getItem("submissions")) {
       try {
-        this.submissions = JSON.parse(localStorage.getItem("submissions"));
+        this.visuals = JSON.parse(localStorage.getItem("submissions"));
       } catch (e) {
         // NOTE Destroy data if invalid
         localStorage.removeItem("submissions");
