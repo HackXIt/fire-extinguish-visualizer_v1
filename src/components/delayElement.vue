@@ -19,10 +19,14 @@
       @keyup.enter="updateDelay()"
       @blur="updateDelay()"
     />
+    <button @click="removeDelay()" class="deleteButton">
+        <img :src="require('@/assets/delete.png')" />
+    </button>
   </div>
 </template>
 
 <script>
+import { eventBus } from "@/main.js";
 export default {
   props: ["value"],
   methods: {
@@ -30,9 +34,13 @@ export default {
       if (this.$refs.timeInput.value < 1) this.$refs.timeInput.value = 1;
       console.debug(this.$refs.timeInput.value, this.$refs.nameInput.value);
       this.$emit("input", {
+        id: this.value.id,
         seconds: this.$refs.timeInput.value,
         name: this.$refs.nameInput.value
       });
+    },
+    removeDelay() {
+      eventBus.$emit("delete-delay", this.value)
     }
   }
 };
