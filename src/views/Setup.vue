@@ -68,7 +68,7 @@ export default {
     eventBus.$on("delete-delay", elem => {
       console.debug("delete-delay event fired");
       // FIXME Poor implementation of delete
-      //  possible to delete wrong delay when two equal objects are available
+      //  possible to delete wrong delay when two equal objects are available22
       this.delays.splice(this.delays.findIndex(x => x === elem), 1)
     })
     // NOTE Using localStorage to provide data on Reload

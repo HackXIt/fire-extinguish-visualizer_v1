@@ -38,6 +38,9 @@
 </template>
 
 <style>
+/*
+TODO Implement CSS Grid for proper Visualization
+*/
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

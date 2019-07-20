@@ -13,6 +13,15 @@
         :valueIsNumber="true"
         :preText="submission.board.boardType.toUpperCase() + '-'"
       />
+      <!-- TODO make Activation of IO-A dependant/reactive to IO-B
+      <select>
+        <optgroup v-for="(submission, index) in submissions" :key="index"
+          :label="submission.description">
+          <option v-for="(io, index) in submission.IO" :key="io"
+            v-text="`${submission.board.boardType}-${io}`"
+          />
+        </optgroup>
+      </select> -->
     </div>
   </div>
 </template>
@@ -64,6 +73,14 @@ export default {
         index: n
       };
       eventBus.$emit("delete-submission", item);
+    },
+    createLink(ref, link) {
+      const obj = {
+        ref,
+        link
+      };
+      console.debug(obj);
+      return obj;
     }
   }
 };
@@ -71,7 +88,7 @@ export default {
 
 <style scoped>
 .deleteButton {
-  background-color: red; /* Green */
+  background-color: red;
   border: none;
   color: black;
   text-align: center;
