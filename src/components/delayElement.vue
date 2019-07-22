@@ -20,7 +20,7 @@
       @blur="updateDelay()"
     />
     <button @click="removeDelay()" class="deleteButton">
-        <img :src="require('@/assets/delete.png')" />
+      <img :src="require('@/assets/delete.png')" />
     </button>
   </div>
 </template>
@@ -40,7 +40,7 @@ export default {
       });
     },
     removeDelay() {
-      eventBus.$emit("delete-delay", this.value)
+      eventBus.$emit("delete-delay", this.value);
     }
   }
 };

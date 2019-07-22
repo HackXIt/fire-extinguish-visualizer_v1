@@ -6,7 +6,6 @@
     <br />
     <configOptions :submissions="submissions" />
     <delayElement v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
-    
   </div>
 </template>
 
@@ -69,8 +68,8 @@ export default {
       console.debug("delete-delay event fired");
       // FIXME Poor implementation of delete
       //  possible to delete wrong delay when two equal objects are available22
-      this.delays.splice(this.delays.findIndex(x => x === elem), 1)
-    })
+      this.delays.splice(this.delays.findIndex(x => x === elem), 1);
+    });
     // NOTE Using localStorage to provide data on Reload
     //  Also to provide data to Visualization
     //  Client-Side Storage: https://vuejs.org/v2/cookbook/client-side-storage.html
@@ -93,7 +92,7 @@ export default {
   methods: {
     addDelay() {
       const newDelay = {
-        id: this.delays.length+1,
+        id: this.delays.length + 1,
         seconds: null,
         name: ""
       };
@@ -103,5 +102,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style lang="scss" scoped></style>
