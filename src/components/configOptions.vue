@@ -1,9 +1,10 @@
 <template>
-  <div id="configOptions" v-if="notEmpty">
-    <div v-for="(submission, index) in submissions" :key="index">
+  <div class="submissions" v-if="notEmpty">
+    <div :class="`port${index+1}`" v-for="(submission, index) in submissions" :key="index">
       <button @click="removeSubmission(index)" class="deleteButton">
         <img :src="require('@/assets/delete.png')" />Delete
       </button>
+      {{ `Port ${index+1}` }}
       <click-to-edit v-model="submissions[index].description" />
       <label v-if="duplicateValue(submission.IO)" v-text="warning" />
       <click-to-edit
@@ -95,5 +96,33 @@ export default {
   text-decoration: none;
   display: inline-block;
   font-size: 14px;
+}
+.submissions {
+  display: grid;
+  grid:
+    [row1-start] "port1 port2" 1fr [row1-end]
+    [row2-start] "port3 port4" 1fr [row2-end]
+    / 1fr 1fr;
+}
+.ports {
+  grid-area: row1-start / 1 / row2-end / 3;
+  border: 1px dashed grey;
+  background-color: firebrick;
+}
+.port1 {
+  @extend .ports;
+  grid-area: port1;
+}
+.port2 {
+  @extend .ports;
+  grid-area: port2;
+}
+.port3 {
+  @extend .ports;
+  grid-area: port3;
+}
+.port4 {
+  @extend .ports;
+  grid-area: port4;
 }
 </style>

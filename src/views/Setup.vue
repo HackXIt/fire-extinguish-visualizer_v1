@@ -1,11 +1,12 @@
 <template>
   <div class="setup">
-    {{ instructions }} <br />
-    <boardSelect />
-    <button @click="addDelay">Add delayElement</button>
-    <br />
-    <configOptions :submissions="submissions" />
-    <delayElement v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
+    <p class="instructions">
+      {{ instructions }}
+    </p>
+    <boardSelect class="boardSelect" />
+    <configOptions class="boardOptions" :submissions="submissions" />
+    <button class="addDelay" @click="addDelay">Add delayElement</button>
+    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
   </div>
 </template>
 
@@ -76,6 +77,11 @@ export default {
     if (localStorage.getItem("submissions")) {
       try {
         this.submissions = JSON.parse(localStorage.getItem("submissions"));
+        this.submissions.forEach(item => {
+          // console.debug(item);
+          eventBus.$emit("disable-port", item.port.id);
+        })
+        
       } catch (e) {
         // NOTE Destroy data if invalid
         localStorage.removeItem("submissions");
@@ -102,4 +108,29 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.setup {
+  display: grid;
+  grid-template:
+    [row1-start] "instructions instructions" min-content [row1-end]
+    [row2-start] "boardSelect boardOptions" 1fr [row2-end]
+    [row3-start] "boardSelect boardOptions" 1fr [row3-end]
+    [row4-start] "addDelay delayOptions" 2fr [row4-end]
+    / 1fr 2fr; 
+}
+.instructions {
+  grid-area: instructions;
+}
+.boardSelect {
+  grid-area: boardSelect;
+}
+.boardOptions {
+  grid-area: boardOptions;
+}
+.addDelay {
+  grid-area: addDelay;
+}
+.delayOptions {
+  grid-area: delayOptions;
+}
+</style>

@@ -166,7 +166,7 @@ export default {
             boardType: this.variantSelection.boardType
           },
           port: {
-            id: this.variantSelection.id,
+            id: this.portSelection.id,
             name: this.portSelection.name,
             gpio: this.portSelection.gpio
           },
@@ -192,8 +192,16 @@ export default {
     eventBus.$on("delete-submission", item => {
       this.ports[item.portId - 1].available = true;
     });
+    eventBus.$on("disable-port", port => {
+      console.debug(`Port ${port} disabled`)
+      this.ports[port - 1].available = false;
+    })
   }
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.board-select {
+  display: contents;
+}
+</style>

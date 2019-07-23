@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="gridContent">
     <div v-if="valueIsNumber">
       <label v-if="preText" v-text="preText" />
       <input
@@ -86,4 +86,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.gridContent {
+  display: contents;
+}
+</style>
