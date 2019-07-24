@@ -1,11 +1,5 @@
 <template>
   <div class="visuals">
-    <!-- <p id="error">
-      {{ error }}
-    </p>
-    <p id="post">
-      {{ post }}
-    </p> -->
     <p v-for="(submission, index) in visuals" :key="index">
       {{ index }}
       {{ submission.board.boardType }}
@@ -16,31 +10,6 @@
 </template>
 
 <script>
-// NOTE KEPT FOR LATER
-// import { getPost } from "@/api.js";
-// export default {
-//   name: "visualization",
-//   data() {
-//     return {
-//       post: null,
-//       error: null
-//     };
-//   },
-//   beforeRouteEnter(to, from, next) {
-//     getPost(to.params.id, (err, post) => {
-//       next(vm => vm.setData(err, post));
-//     });
-//   },
-//   methods: {
-//     setData(err, post) {
-//       if (err) {
-//         this.error = err.toString();
-//       } else {
-//         this.post = post;
-//       }
-//     }
-//   }
-// };
 export default {
   name: "Visualization",
   data() {
