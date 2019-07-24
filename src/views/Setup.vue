@@ -6,7 +6,12 @@
     <boardSelect class="boardSelect" />
     <configOptions class="boardOptions" :submissions="submissions" />
     <button class="addDelay" @click="addDelay">Add delayElement</button>
-    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
+    <delayElement
+      class="delayOptions"
+      v-for="n in delays.length"
+      :key="n"
+      v-model="delays[n - 1]"
+    />
   </div>
 </template>
 
@@ -80,8 +85,7 @@ export default {
         this.submissions.forEach(item => {
           // console.debug(item);
           eventBus.$emit("disable-port", item.port.id);
-        })
-        
+        });
       } catch (e) {
         // NOTE Destroy data if invalid
         localStorage.removeItem("submissions");
@@ -116,7 +120,7 @@ export default {
     [row2-start] "boardSelect boardOptions" 1fr [row2-end]
     [row3-start] "boardSelect boardOptions" 1fr [row3-end]
     [row4-start] "addDelay delayOptions" 2fr [row4-end]
-    / 1fr 2fr; 
+    / 1fr 2fr;
 }
 .instructions {
   grid-area: instructions;

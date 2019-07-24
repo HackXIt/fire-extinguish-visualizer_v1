@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="delayGrid">
     Time (in seconds):
     <input
       type="number"
@@ -46,4 +46,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// FIXME Not adding content dynamically to the grid-area
+.delayGrid {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr;
+  // grid-auto-flow: row;
+}
+</style>

@@ -1,10 +1,14 @@
 <template>
   <div class="submissions" v-if="notEmpty">
-    <div :class="`port${index+1}`" v-for="(submission, index) in submissions" :key="index">
+    <div
+      :class="`port${submission.port.id}`"
+      v-for="(submission, index) in submissions"
+      :key="index"
+    >
       <button @click="removeSubmission(index)" class="deleteButton">
         <img :src="require('@/assets/delete.png')" />Delete
       </button>
-      {{ `Port ${index+1}` }}
+      {{ `Port ${submission.port.id}` }}
       <click-to-edit v-model="submissions[index].description" />
       <label v-if="duplicateValue(submission.IO)" v-text="warning" />
       <click-to-edit

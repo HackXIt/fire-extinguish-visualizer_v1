@@ -193,9 +193,9 @@ export default {
       this.ports[item.portId - 1].available = true;
     });
     eventBus.$on("disable-port", port => {
-      console.debug(`Port ${port} disabled`)
+      console.debug(`Port ${port} disabled`);
       this.ports[port - 1].available = false;
-    })
+    });
   }
 };
 </script>
