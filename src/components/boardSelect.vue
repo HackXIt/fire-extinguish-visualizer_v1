@@ -1,6 +1,9 @@
 <template>
   <div>
     <form class="board-select" @submit.prevent="generate">
+      <!-- TODO Use vue-multiselect plugin for a better selection 
+      https://vue-multiselect.js.org/
+      -->
       <label
         class="error-msg"
         for="boardSelect"

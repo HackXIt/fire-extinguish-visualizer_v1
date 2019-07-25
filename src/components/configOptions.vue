@@ -18,6 +18,7 @@
         :valueIsNumber="true"
         :preText="submission.board.boardType.toUpperCase() + '-'"
       />
+      
       <!-- TODO make Activation of IO-A dependant/reactive to IO-B
       <select>
         <optgroup v-for="(submission, index) in submissions" :key="index"
@@ -52,6 +53,16 @@ export default {
   computed: {
     notEmpty() {
       return this.submissions.length > 0 ? true : false;
+    },
+    // TODO Get Array of IO per Port for Multiselection
+    ioPorts() {
+      const ioPorts = []
+      this.submissions.forEach(submission => {
+        // ioPorts.push({})
+        for(var i = 0; i < submission.io.length; i++) {
+          ioPorts.submission.push(`${submission.description}-${submission.io[i]}`);
+        }
+      })
     }
   },
   methods: {
