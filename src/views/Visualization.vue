@@ -13,27 +13,31 @@
       </button>
     </p>
     <div
+      class="counters"
       v-for="counter in counters"
       :key="counter.id"
     >
-      <circular-count-down-timer
-        :seconds-stroke-color="'#f00'"
-        :seconds-fill-color="'#00ffff66'"
-        :size="200"
-        :padding="4"
-        :initial-value="counter.seconds"
-        :show-second="true"
-        :show-minute="false"
-        :show-hour="false"
-        :show-negatives="false"
-        :second-label="counter.name"
-        :steps="1"
-        :paused="counter.pause"
+      <button
+        @click="switchCountdown(`vac${counter.id}`, counter.id)"
+        v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <button 
-        @click="pause(counter.id)"
-        v-text="`Toggle ${counter.name} - ${counter.pause}`"
-      />
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds*1000"
+        :autoStart="false"
+      >
+        <span
+          slot="process"
+          slot-scope="{ timeObj }"
+        >
+          {{ timeObj.ceil.s }}
+        </span>
+        <span
+          slot="finish"
+        >
+          Done!
+        </span>
+      </vac>
     </div>
   </div>
 </template>
@@ -81,8 +85,12 @@ export default {
       }
       console.debug(`Bin-${bin} - Reversed-${rev} - Parsed-${parseInt(bin, 2)}`)
     },
-    pause(id) {
-      this.counters[id - 1].pause = !this.counters[id - 1].pause
+    switchCountdown(ref, id) {
+      // console.debug(this.$refs[ref][0])
+      this.$refs[ref][0].switchCountdown()
+      this.$nextTick(() => {
+        this.counters[id - 1].state = this.$refs[ref][0].state === 'stoped' ? 'On' : 'Off'
+      })
     }
   }
 };

@@ -1,9 +1,9 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router.js";
-import CircularCountDownTimer from "vue-circular-count-down-timer";
+import VueAwesomeCountdown from "vue-awesome-countdown"
 
-Vue.use(CircularCountDownTimer);
+Vue.use(VueAwesomeCountdown);
 Vue.config.productionTip = false;
 
 export const eventBus = new Vue();
