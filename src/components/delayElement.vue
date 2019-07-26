@@ -35,8 +35,9 @@ export default {
       console.debug(this.$refs.timeInput.value, this.$refs.nameInput.value);
       this.$emit("input", {
         id: this.value.id,
-        seconds: this.$refs.timeInput.value,
-        name: this.$refs.nameInput.value
+        seconds: parseInt(this.$refs.timeInput.value, 10),
+        name: this.$refs.nameInput.value,
+        pause: true
       });
     },
     removeDelay() {

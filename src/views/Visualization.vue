@@ -4,35 +4,45 @@
       {{ `BoardType: ${submission.board.boardType}` }}
       {{ `PortID: ${submission.port.id}` }}
       {{ `PortName: ${submission.port.name}` }}
-      <button 
-        v-for="(io, index) in submission.IO" 
+      <button
+        v-for="(io, index) in submission.IO"
         :key="index"
         @click="sendByte(io)"
       >
         {{ `${index}: ${submission.description}-${io}` }}
       </button>
     </p>
-    <circular-count-down-timer
-      v-for="counter in counters" :key="counter.id"
-      :initial-value="counter.seconds"
-      :show-minute="false"
-      :show-hour="false"
-      :show-negatives="false"
-      :second-label="counter.name"
-      :steps="1"
-    />
+    <div
+      v-for="counter in counters"
+      :key="counter.id"
+    >
+      <circular-count-down-timer
+        :seconds-stroke-color="'#f00'"
+        :seconds-fill-color="'#00ffff66'"
+        :size="200"
+        :padding="4"
+        :initial-value="counter.seconds"
+        :show-second="true"
+        :show-minute="false"
+        :show-hour="false"
+        :show-negatives="false"
+        :second-label="counter.name"
+        :steps="1"
+        :paused="counter.pause"
+      />
+      <button 
+        @click="pause(counter.id)"
+        v-text="`Toggle ${counter.name} - ${counter.pause}`"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import CircularCountDownTimer from "vue-circular-count-down-timer";
+
 export default {
   name: "Visualization",
   components: {
-    CircularCountDownTimer
-  },
-  render(h) {
-    h(CircularCountDownTimer)
   },
   data() {
     return {
@@ -46,7 +56,7 @@ export default {
         this.visuals = JSON.parse(localStorage.getItem("submissions"));
       } catch (e) {
         // NOTE Destroy data if invalid
-        console.debug(e)
+        console.debug(e);
         localStorage.removeItem("submissions");
       }
     }
@@ -54,22 +64,25 @@ export default {
       try {
         this.counters = JSON.parse(localStorage.getItem("delays"));
       } catch (e) {
-        console.debug(e)
-        localStorage.removeItem("delays")
+        console.debug(e);
+        localStorage.removeItem("delays");
       }
     }
   },
   methods: {
     sendByte(dec) {
       const bin = parseInt(dec, 10).toString(2);
-      const rev = bin.split("").reduce((revString, char)=> char + revString, "")
-      const zeros = "00000000"
+      const rev = bin
+        .split("")
+        .reduce((revString, char) => char + revString, "");
+      const zeros = "00000000";
       for (var i = zeros.length; i > dec; i--) {
-        zeros.split("0").splice()
+        zeros.split("0").splice();
       }
-      console.debug(bin);
-      console.debug(rev);
-      console.debug(parseInt(bin, 2));
+      console.debug(`Bin-${bin} - Reversed-${rev} - Parsed-${parseInt(bin, 2)}`)
+    },
+    pause(id) {
+      this.counters[id - 1].pause = !this.counters[id - 1].pause
     }
   }
 };
