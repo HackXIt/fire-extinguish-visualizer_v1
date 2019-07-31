@@ -1,62 +1,59 @@
 <template>
   <div id="content">
-    <p v-for="submission in visuals" :key="submission.port.name">
-      {{ `BoardType: ${submission.board.boardType}` }}
-      {{ `PortID: ${submission.port.id}` }}
-      {{ `PortName: ${submission.port.name}` }}
+    <p v-for="visual in visuals" :key="visual.port.name" class="port">
+      <b>{{ visual.description }}</b>
+      <br />
+      {{ `BoardType: ${visual.board.boardType}` }}
+      <br />
+      {{ `PortID: ${visual.port.id}` }}
+      <br />
+      {{ `PortName: ${visual.port.name}` }}
+      <br />
       <button
-        v-for="(io, index) in submission.IO"
+        v-for="(io, index) in visual.IO"
         :key="index"
-        @click="sendByte(io)"
-      >
-        {{ `${index}: ${submission.description}-${io}` }}
-      </button>
+        @click="sendByte(io, visual.port.name)"
+      >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
     </p>
-    <div
-      class="counters"
-      v-for="counter in counters"
-      :key="counter.id"
-    >
+    <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac
-        :ref="`vac${counter.id}`"
-        :leftTime="counter.seconds*1000"
-        :autoStart="false"
-      >
-        <span
-          slot="process"
-          slot-scope="{ timeObj }"
-        >
-          {{ timeObj.ceil.s }}
-        </span>
-        <span
-          slot="finish"
-        >
-          Done!
-        </span>
+      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds*1000" :autoStart="false">
+        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
+        <span slot="finish">Done!</span>
       </vac>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Visualization",
-  components: {
-  },
+  components: {},
   data() {
     return {
       visuals: [],
-      counters: []
+      counters: [],
+      paths: {
+        togglePort: "http://localhost:5000/togglePort",
+        shift: "http://localhost:5000/shift"
+      }
     };
   },
   mounted() {
     if (localStorage.getItem("submissions")) {
       try {
         this.visuals = JSON.parse(localStorage.getItem("submissions"));
+        this.visuals.forEach(visual => {
+          const payload = {
+            port: visual.port.name,
+            trigger: 0
+          };
+          axios.post(this.paths.togglePort, payload);
+        });
       } catch (e) {
         // NOTE Destroy data if invalid
         console.debug(e);
@@ -72,24 +69,29 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    this.visuals.forEach(visual => {
+      const payload = {
+        port: visual.port.name,
+        trigger: 1
+      };
+      axios.post(this.paths.togglePort, payload);
+    });
+  },
   methods: {
-    sendByte(dec) {
-      const bin = parseInt(dec, 10).toString(2);
-      const rev = bin
-        .split("")
-        .reduce((revString, char) => char + revString, "");
-      const zeros = "00000000";
-      for (var i = zeros.length; i > dec; i--) {
-        zeros.split("0").splice();
-      }
-      console.debug(`Bin-${bin} - Reversed-${rev} - Parsed-${parseInt(bin, 2)}`)
+    sendByte(pin, port) {
+      console.debug(`Setting ${pin} on ${port}`);
+      const payload = { pin, port };
+      console.debug(payload);
+      axios.post(this.paths.shift, payload);
     },
     switchCountdown(ref, id) {
       // console.debug(this.$refs[ref][0])
-      this.$refs[ref][0].switchCountdown()
+      this.$refs[ref][0].switchCountdown();
       this.$nextTick(() => {
-        this.counters[id - 1].state = this.$refs[ref][0].state === 'stoped' ? 'On' : 'Off'
-      })
+        this.counters[id - 1].state =
+          this.$refs[ref][0].state === "stoped" ? "On" : "Off";
+      });
     }
   }
 };
@@ -99,5 +101,11 @@ export default {
 /*** EXAMPLE ***/
 #content {
   width: 100%;
+}
+.port {
+  box-sizing: border-box;
+  width: fit-content;
+  border: 1px dashed red;
+  box-align: center;
 }
 </style>
