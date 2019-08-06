@@ -38,8 +38,12 @@ export default {
       visuals: [],
       counters: [],
       paths: {
-        togglePort: "http://localhost:5000/togglePort",
-        shift: "http://localhost:5000/shift"
+        // FIXME Network-Error
+        // THIS NEEDS TO HAVE THE IP OF THE RASPBERRY PI
+        // THE BROWSER REFERENCES THIS ADDRESS AND LOCALHOST POINTS TO THE CLIENT
+        // Need to get some sort of static IP going
+        togglePort: "http://192.168.137.139:80/togglePort",
+        shift: "http://192.168.137.139:80/shift"
       }
     };
   },
@@ -52,7 +56,9 @@ export default {
             port: visual.port.name,
             trigger: 0
           };
-          axios.post(this.paths.togglePort, payload);
+          axios.post(this.paths.togglePort, payload).catch(error => {
+            console.error(error);
+          });
         });
       } catch (e) {
         // NOTE Destroy data if invalid
@@ -75,15 +81,22 @@ export default {
         port: visual.port.name,
         trigger: 1
       };
-      axios.post(this.paths.togglePort, payload);
+      axios.post(this.paths.togglePort, payload).catch(error => {
+        console.error(error);
+      });
     });
   },
   methods: {
     sendByte(pin, port) {
       console.debug(`Setting ${pin} on ${port}`);
-      const payload = { pin, port };
+      const payload = {
+        pin,
+        port
+      };
       console.debug(payload);
-      axios.post(this.paths.shift, payload);
+      axios.post(this.paths.shift, payload).catch(error => {
+        console.error(error);
+      });
     },
     switchCountdown(ref, id) {
       // console.debug(this.$refs[ref][0])
