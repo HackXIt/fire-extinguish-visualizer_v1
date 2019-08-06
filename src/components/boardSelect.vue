@@ -4,51 +4,30 @@
       <!-- TODO Use vue-multiselect plugin for a better selection 
       https://vue-multiselect.js.org/
       -->
-      <label
-        class="error-msg"
-        for="boardSelect"
-        v-if="error.sel.val"
-        v-text="error.sel.msg"
-      />
+      <label class="error-msg" for="boardSelect" v-if="error.sel.val" v-text="error.sel.msg" />
       <select id="boardSelect" v-model="variantSelection">
         <option
           v-for="variant in variants"
           :key="variant.id"
           :value="variant"
-          >{{ variant.placeholder }}</option
-        >
+        >{{ variant.placeholder }}</option>
       </select>
       <p v-if="selected">
         UPLOAD OF IMAGES GOES HERE (DEBUG)
         <img :src="variantSelection.imgActive" />
         <img :src="variantSelection.imgPassive" />
-        <img
-          v-if="variantSelection.imgPreActive"
-          :src="variantSelection.imgPreActive"
-        />
+        <img v-if="variantSelection.imgPreActive" :src="variantSelection.imgPreActive" />
       </p>
-      <label
-        class="error-msg"
-        for="boardAmount"
-        v-if="error.num.val"
-        v-text="error.num.msg"
-      />
+      <label class="error-msg" for="boardAmount" v-if="error.num.val" v-text="error.num.msg" />
       <select id="portSelect" v-model="portSelection">
         <option
           v-for="port in ports"
           :key="port.id"
           :value="port"
           :disabled="!port.available"
-          >{{ port.name }}</option
-        >
+        >{{ port.name }}</option>
       </select>
-      <input
-        type="number"
-        id="boardAmount"
-        v-model.number="amount"
-        min="1"
-        max="8"
-      />
+      <input type="number" id="boardAmount" v-model.number="amount" min="1" max="8" />
       <input type="submit" value="generate" />
     </form>
   </div>
@@ -82,7 +61,8 @@ export default {
           rpiType: "output",
           boardType: "im8",
           imgActive: require("@/assets/middle_finger.png"),
-          imgPassive: require("@/assets/fist.png")
+          imgPassive: require("@/assets/fist.png"),
+          gpio: ["SERIN", "SRCK", "RCK", "G", "CLR"]
         },
         {
           id: 2,
@@ -90,7 +70,8 @@ export default {
           rpiType: "input",
           boardType: "om8",
           imgActive: require("@/assets/ok.png"),
-          imgPassive: require("@/assets/hand.png")
+          imgPassive: require("@/assets/hand.png"),
+          gpio: ["MODE", "SEROUT", "SERIN", "CLK", "CLKSTOP"]
         },
         {
           id: 3,
@@ -99,7 +80,8 @@ export default {
           boardType: "vds",
           imgActive: require("@/assets/middle_finger.png"),
           imgPreActive: require("@/assets/victory.png"),
-          imgPassive: require("@/assets/fist.png")
+          imgPassive: require("@/assets/fist.png"),
+          gpio: ["SERIN", "SRCK", "RCK", "G", "CLR"]
         }
       ],
       ports: [
@@ -108,11 +90,11 @@ export default {
           available: true,
           name: "SER1",
           gpio: {
-            SERIN: 3,
-            SRCK: 5,
-            RCK: 7,
-            G: 11,
-            CLR: 13
+            1: 3,
+            2: 5,
+            3: 7,
+            4: 11,
+            5: 13
           }
         },
         {
@@ -120,11 +102,11 @@ export default {
           available: true,
           name: "SER2",
           gpio: {
-            SERIN: 8,
-            SRCK: 10,
-            RCK: 12,
-            G: 16,
-            CLR: 18
+            1: 8,
+            2: 10,
+            3: 12,
+            4: 16,
+            5: 18
           }
         },
         {
@@ -132,11 +114,11 @@ export default {
           available: true,
           name: "SER3",
           gpio: {
-            SERIN: 29,
-            SRCK: 31,
-            RCK: 33,
-            G: 35,
-            CLR: 37
+            1: 29,
+            2: 31,
+            3: 33,
+            4: 35,
+            5: 37
           }
         },
         {
@@ -144,11 +126,11 @@ export default {
           available: true,
           name: "SER4",
           gpio: {
-            SERIN: 22,
-            SRCK: 24,
-            RCK: 26,
-            G: 32,
-            CLR: 36
+            1: 22,
+            2: 24,
+            3: 26,
+            4: 32,
+            5: 36
           }
         }
       ]
@@ -171,12 +153,17 @@ export default {
           port: {
             id: this.portSelection.id,
             name: this.portSelection.name,
-            gpio: this.portSelection.gpio
+            gpio: Object.create(this.portSelection.gpio)
           },
           IO: []
         };
         for (var i = 1; i <= this.amount; i++) {
           boardSelection.IO.push(i);
+        }
+        for (var i = 1; i <= this.variantSelection.gpio.length; i++) {
+          boardSelection.port.gpio[this.variantSelection.gpio[i - 1]] =
+            boardSelection.port.gpio[i];
+          delete boardSelection.port.gpio[i];
         }
         this.ports[this.portSelection.id - 1].available = false;
         eventBus.$emit("new-submission", boardSelection);
