@@ -97,7 +97,7 @@ export default {
   beforeDestroy() {
     console.debug("Setup: beforeDestroy() triggered.");
     console.debug("Sending setup-data to FireFlask");
-    const path = `https://${firePi}/setup`;
+    const path = `http://${firePi}/setup`;
     const payload = {
       submissions: this.submissions
     };
