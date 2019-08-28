@@ -1,7 +1,7 @@
 <template>
   <div id="content">
     <p v-for="visual in visuals" :key="visual.port.name" class="port">
-      <!-- <b>{{ visual.description }}</b>
+      <b>{{ visual.description }}</b>
       <br />
       {{ `BoardType: ${visual.board.boardType}` }}
       <br />
@@ -13,12 +13,7 @@
         v-for="(io, index) in visual.IO"
         :key="index"
         @click="sendByte(io, visual.port.name)"
-      >
-        {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
-      </button>-->
-      <IM8 v-if="visual.board.boardType === 'im8'" :board="visual" />
-      <OM8 v-if="visual.board.boardType === 'om8'" :board="visual" />
-      <VDS v-if="visual.board.boardType === 'vds'" :board="visual" />
+      >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
     </p>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
@@ -39,16 +34,8 @@
 
 <script>
 import axios from "axios";
-import IM8 from "@/components/IM8.vue";
-import OM8 from "@/components/OM8.vue";
-import VDS from "@/components/VDS.vue";
 export default {
   name: "Visualization",
-  components: {
-    IM8,
-    OM8,
-    VDS
-  },
   data() {
     return {
       visuals: [],
@@ -57,7 +44,7 @@ export default {
         // FIXME Network-Error
         // THIS NEEDS TO HAVE THE IP OF THE RASPBERRY PI
         // THE BROWSER REFERENCES THIS ADDRESS AND LOCALHOST POINTS TO THE CLIENT
-        // Need to get some sort of static IP going
+        // Need to get some sort of static IP going or hostname
         togglePort: "http://localhost:80/togglePort",
         shift: "http://localhost:80/shift"
       }
