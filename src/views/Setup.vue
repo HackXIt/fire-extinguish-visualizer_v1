@@ -4,7 +4,12 @@
     <boardSelect class="boardSelect" />
     <configOptions class="boardOptions" :submissions="submissions" />
     <button class="addDelay" @click="addDelay">Add delayElement</button>
-    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
+    <delayElement
+      class="delayOptions"
+      v-for="n in delays.length"
+      :key="n"
+      v-model="delays[n - 1]"
+    />
   </div>
 </template>
 

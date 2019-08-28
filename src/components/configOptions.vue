@@ -27,7 +27,7 @@
             v-text="`${submission.board.boardType}-${io}`"
           />
         </optgroup>
-      </select> -->
+      </select>-->
     </div>
   </div>
 </template>
@@ -53,19 +53,19 @@ export default {
   computed: {
     notEmpty() {
       return this.submissions.length > 0 ? true : false;
-    },
-    // TODO Get Array of IO per Port for Multiselection
-    ioPorts() {
-      const ioPorts = [];
-      this.submissions.forEach(submission => {
-        // ioPorts.push({})
-        for (var i = 0; i < submission.io.length; i++) {
-          ioPorts.submission.push(
-            `${submission.description}-${submission.io[i]}`
-          );
-        }
-      });
     }
+    // TODO Get Array of IO per Port for Multiselection
+    // ioPorts() {
+    //   const ioPorts = [];
+    //   this.submissions.forEach(submission => {
+    //     // ioPorts.push({})
+    //     for (var i = 0; i < submission.io.length; i++) {
+    //       ioPorts.submission.push(
+    //         `${submission.description}-${submission.io[i]}`
+    //       );
+    //     }
+    //   });
+    // }
   },
   methods: {
     duplicateValue(arr) {

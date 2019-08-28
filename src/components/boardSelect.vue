@@ -4,30 +4,51 @@
       <!-- TODO Use vue-multiselect plugin for a better selection 
       https://vue-multiselect.js.org/
       -->
-      <label class="error-msg" for="boardSelect" v-if="error.sel.val" v-text="error.sel.msg" />
+      <label
+        class="error-msg"
+        for="boardSelect"
+        v-if="error.sel.val"
+        v-text="error.sel.msg"
+      />
       <select id="boardSelect" v-model="variantSelection">
         <option
           v-for="variant in variants"
           :key="variant.id"
           :value="variant"
-        >{{ variant.placeholder }}</option>
+          >{{ variant.placeholder }}</option
+        >
       </select>
       <p v-if="selected">
         UPLOAD OF IMAGES GOES HERE (DEBUG)
         <img :src="variantSelection.imgActive" />
         <img :src="variantSelection.imgPassive" />
-        <img v-if="variantSelection.imgPreActive" :src="variantSelection.imgPreActive" />
+        <img
+          v-if="variantSelection.imgPreActive"
+          :src="variantSelection.imgPreActive"
+        />
       </p>
-      <label class="error-msg" for="boardAmount" v-if="error.num.val" v-text="error.num.msg" />
+      <label
+        class="error-msg"
+        for="boardAmount"
+        v-if="error.num.val"
+        v-text="error.num.msg"
+      />
       <select id="portSelect" v-model="portSelection">
         <option
           v-for="port in ports"
           :key="port.id"
           :value="port"
           :disabled="!port.available"
-        >{{ port.name }}</option>
+          >{{ port.name }}</option
+        >
       </select>
-      <input type="number" id="boardAmount" v-model.number="amount" min="1" max="8" />
+      <input
+        type="number"
+        id="boardAmount"
+        v-model.number="amount"
+        min="1"
+        max="8"
+      />
       <input type="submit" value="generate" />
     </form>
   </div>
@@ -160,10 +181,10 @@ export default {
         for (var i = 1; i <= this.amount; i++) {
           boardSelection.IO.push(i);
         }
-        for (var i = 1; i <= this.variantSelection.gpio.length; i++) {
-          boardSelection.port.gpio[this.variantSelection.gpio[i - 1]] =
-            boardSelection.port.gpio[i];
-          delete boardSelection.port.gpio[i];
+        for (var j = 1; j <= this.variantSelection.gpio.length; j++) {
+          boardSelection.port.gpio[this.variantSelection.gpio[j - 1]] =
+            boardSelection.port.gpio[j];
+          delete boardSelection.port.gpio[j];
         }
         this.ports[this.portSelection.id - 1].available = false;
         eventBus.$emit("new-submission", boardSelection);

@@ -14,11 +14,13 @@
           v-for="(io, index) in visual.IO"
           :key="index"
           @click="sendByte(io, visual.port.name)"
-        >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
+        >
+          {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
+        </button>
       </div>
       <div v-else>
         <div v-for="(io, index) in visual.IO" :key="index">
-          {{`OM8-${io}`}}
+          {{ `OM8-${io}` }}
           <!-- active|positive|intermediary|negative -->
           <status-indicator status="active" />
         </div>
@@ -29,11 +31,13 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds * 1000"
+        :autoStart="false"
+      >
         <span slot="process" slot-scope="{ timeObj }">
-          {{
-          timeObj.ceil.s
-          }}
+          {{ timeObj.ceil.s }}
         </span>
         <span slot="finish">Done!</span>
       </vac>
