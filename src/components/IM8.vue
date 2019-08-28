@@ -1,9 +1,16 @@
 <template>
-  <div></div>
+  <div>TEST-IM8</div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    board: {
+      type: Object,
+      required: true
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped></style>

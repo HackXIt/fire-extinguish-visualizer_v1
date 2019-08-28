@@ -1,7 +1,7 @@
 <template>
   <div id="content">
     <p v-for="visual in visuals" :key="visual.port.name" class="port">
-      <b>{{ visual.description }}</b>
+      <!-- <b>{{ visual.description }}</b>
       <br />
       {{ `BoardType: ${visual.board.boardType}` }}
       <br />
@@ -15,21 +15,22 @@
         @click="sendByte(io, visual.port.name)"
       >
         {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
-      </button>
+      </button>-->
+      <IM8 v-if="visual.board.boardType === 'im8'" :board="visual" />
+      <OM8 v-if="visual.board.boardType === 'om8'" :board="visual" />
+      <VDS v-if="visual.board.boardType === 'vds'" :board="visual" />
     </p>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac
-        :ref="`vac${counter.id}`"
-        :leftTime="counter.seconds * 1000"
-        :autoStart="false"
-      >
-        <span slot="process" slot-scope="{ timeObj }">{{
+      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
+        <span slot="process" slot-scope="{ timeObj }">
+          {{
           timeObj.ceil.s
-        }}</span>
+          }}
+        </span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -38,9 +39,16 @@
 
 <script>
 import axios from "axios";
+import IM8 from "@/components/IM8.vue";
+import OM8 from "@/components/OM8.vue";
+import VDS from "@/components/VDS.vue";
 export default {
   name: "Visualization",
-  components: {},
+  components: {
+    IM8,
+    OM8,
+    VDS
+  },
   data() {
     return {
       visuals: [],
