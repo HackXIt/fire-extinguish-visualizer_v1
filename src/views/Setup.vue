@@ -4,12 +4,7 @@
     <boardSelect class="boardSelect" />
     <configOptions class="boardOptions" :submissions="submissions" />
     <button class="addDelay" @click="addDelay">Add delayElement</button>
-    <delayElement
-      class="delayOptions"
-      v-for="n in delays.length"
-      :key="n"
-      v-model="delays[n - 1]"
-    />
+    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
   </div>
 </template>
 
@@ -103,7 +98,10 @@ export default {
     console.debug("Setup: beforeDestroy() triggered.");
     console.debug("Sending setup-data to FireFlask");
     const path = `https://${firePi}/setup`;
-    axios.post(path, this.submissions).catch(error => {
+    const payload = {
+      submissions: this.submissions
+    };
+    axios.post(path, payload).catch(error => {
       console.error(error);
     });
   },
