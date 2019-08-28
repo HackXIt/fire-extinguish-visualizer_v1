@@ -112,10 +112,15 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 /*** EXAMPLE ***/
 #content {
   width: 100%;
+  background-image: url("../assets/visuals_bg.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 1600px;
+  width: 1000px;
 }
 .port {
   box-sizing: border-box;
