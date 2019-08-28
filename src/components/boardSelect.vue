@@ -4,51 +4,30 @@
       <!-- TODO Use vue-multiselect plugin for a better selection 
       https://vue-multiselect.js.org/
       -->
-      <label
-        class="error-msg"
-        for="boardSelect"
-        v-if="error.sel.val"
-        v-text="error.sel.msg"
-      />
+      <label class="error-msg" for="boardSelect" v-if="error.sel.val" v-text="error.sel.msg" />
       <select id="boardSelect" v-model="variantSelection">
         <option
           v-for="variant in variants"
           :key="variant.id"
           :value="variant"
-          >{{ variant.placeholder }}</option
-        >
+        >{{ variant.placeholder }}</option>
       </select>
       <p v-if="selected">
         UPLOAD OF IMAGES GOES HERE (DEBUG)
         <img :src="variantSelection.imgActive" />
         <img :src="variantSelection.imgPassive" />
-        <img
-          v-if="variantSelection.imgPreActive"
-          :src="variantSelection.imgPreActive"
-        />
+        <img v-if="variantSelection.imgPreActive" :src="variantSelection.imgPreActive" />
       </p>
-      <label
-        class="error-msg"
-        for="boardAmount"
-        v-if="error.num.val"
-        v-text="error.num.msg"
-      />
+      <label class="error-msg" for="boardAmount" v-if="error.num.val" v-text="error.num.msg" />
       <select id="portSelect" v-model="portSelection">
         <option
           v-for="port in ports"
           :key="port.id"
           :value="port"
           :disabled="!port.available"
-          >{{ port.name }}</option
-        >
+        >{{ port.name }}</option>
       </select>
-      <input
-        type="number"
-        id="boardAmount"
-        v-model.number="amount"
-        min="1"
-        max="8"
-      />
+      <input type="number" id="boardAmount" v-model.number="amount" min="1" max="8" />
       <input type="submit" value="generate" />
     </form>
   </div>
@@ -204,7 +183,7 @@ export default {
       this.ports[item.portId - 1].available = true;
     });
     eventBus.$on("disable-port", port => {
-      console.debug(`Port ${port} disabled`);
+      console.debug(`Port-Selection for Port ${port} disabled`);
       this.ports[port - 1].available = false;
     });
   }

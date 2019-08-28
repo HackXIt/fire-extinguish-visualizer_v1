@@ -14,9 +14,7 @@
           v-for="(io, index) in visual.IO"
           :key="index"
           @click="sendByte(io, visual.port.name)"
-        >
-          {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
-        </button>
+        >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
       </div>
       <div v-else>
         <div v-for="(io, index) in visual.IO" :key="index">
@@ -31,14 +29,8 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac
-        :ref="`vac${counter.id}`"
-        :leftTime="counter.seconds * 1000"
-        :autoStart="false"
-      >
-        <span slot="process" slot-scope="{ timeObj }">
-          {{ timeObj.ceil.s }}
-        </span>
+      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
+        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -84,6 +76,7 @@ export default {
     }
   },
   beforeDestroy() {
+    console.debug("Sending cleanup request to FireFlask");
     axios.post(this.paths.cleanup).catch(error => {
       console.error(error);
     });
