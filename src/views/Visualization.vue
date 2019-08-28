@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <p v-for="visual in visuals" :key="visual.port.name" class="port">
+    <div v-for="visual in visuals" :key="visual.port.name" class="port">
       <b>{{ visual.description }}</b>
       <br />
       {{ `BoardType: ${visual.board.boardType}` }}
@@ -9,12 +9,21 @@
       <br />
       {{ `PortName: ${visual.port.name}` }}
       <br />
-      <button
-        v-for="(io, index) in visual.IO"
-        :key="index"
-        @click="sendByte(io, visual.port.name)"
-      >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
-    </p>
+      <div v-if="isIM8orVDS(visual.board.boardType)">
+        <button
+          v-for="(io, index) in visual.IO"
+          :key="index"
+          @click="sendByte(io, visual.port.name)"
+        >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
+      </div>
+      <div v-else>
+        <div v-for="(io, index) in visual.IO" :key="index">
+          {{`OM8-${io}`}}
+          <!-- active|positive|intermediary|negative -->
+          <status-indicator status="active" />
+        </div>
+      </div>
+    </div>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
@@ -90,6 +99,13 @@ export default {
     });
   },
   methods: {
+    isIM8orVDS(typeText) {
+      if (typeText === "im8" || typeText === "vds") {
+        return true;
+      } else {
+        return false;
+      }
+    },
     sendByte(pin, port) {
       console.debug(`Setting ${pin} on ${port}`);
       const payload = {
