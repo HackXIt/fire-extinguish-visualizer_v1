@@ -43,6 +43,7 @@
 
 <script>
 import axios from "axios";
+import { firePi } from "@/variables.js";
 export default {
   name: "Visualization",
   data() {
@@ -54,8 +55,8 @@ export default {
         // THIS NEEDS TO HAVE THE IP OF THE RASPBERRY PI
         // THE BROWSER REFERENCES THIS ADDRESS AND LOCALHOST POINTS TO THE CLIENT
         // Need to get some sort of static IP going or hostname
-        togglePort: "http://localhost:80/togglePort",
-        shift: "http://localhost:80/shift"
+        togglePort: `http://${firePi}/togglePort`,
+        shift: `http://${firePi}/shift`
       }
     };
   },

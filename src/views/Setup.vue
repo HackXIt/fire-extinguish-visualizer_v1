@@ -4,20 +4,17 @@
     <boardSelect class="boardSelect" />
     <configOptions class="boardOptions" :submissions="submissions" />
     <button class="addDelay" @click="addDelay">Add delayElement</button>
-    <delayElement
-      class="delayOptions"
-      v-for="n in delays.length"
-      :key="n"
-      v-model="delays[n - 1]"
-    />
+    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import boardSelect from "@/components/boardSelect.vue";
 import configOptions from "@/components/configOptions.vue";
 import delayElement from "@/components/delayElement.vue";
 import { eventBus } from "@/main.js";
+import { firePi } from "@/variables.js";
 export default {
   components: {
     boardSelect,
@@ -71,7 +68,7 @@ export default {
     eventBus.$on("delete-delay", elem => {
       console.debug("delete-delay event fired");
       // FIXME Poor implementation of delete
-      //  possible to delete wrong delay when two equal objects are available22
+      //  possible to delete wrong delay when two equal objects are available
       this.delays.splice(this.delays.findIndex(x => x === elem), 1);
     });
     // NOTE Using localStorage to provide data on Reload
@@ -96,6 +93,11 @@ export default {
         localStorage.removeItem("delays");
       }
     }
+  },
+  beforeDestroy() {
+    console.debug("Setup: beforeDestroy() triggered.");
+    console.debug("Sending setup-data to FireFlask");
+    const path = `https://${firePi}/setup`;
   },
   methods: {
     addDelay() {
