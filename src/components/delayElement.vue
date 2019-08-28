@@ -37,7 +37,7 @@ export default {
         id: this.value.id,
         seconds: parseInt(this.$refs.timeInput.value, 10),
         name: this.$refs.nameInput.value,
-        state: 'On'
+        state: "On"
       });
     },
     removeDelay() {

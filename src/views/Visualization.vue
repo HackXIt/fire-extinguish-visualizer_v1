@@ -13,15 +13,23 @@
         v-for="(io, index) in visual.IO"
         :key="index"
         @click="sendByte(io, visual.port.name)"
-      >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
+      >
+        {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
+      </button>
     </p>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds*1000" :autoStart="false">
-        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds * 1000"
+        :autoStart="false"
+      >
+        <span slot="process" slot-scope="{ timeObj }">{{
+          timeObj.ceil.s
+        }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -42,8 +50,8 @@ export default {
         // THIS NEEDS TO HAVE THE IP OF THE RASPBERRY PI
         // THE BROWSER REFERENCES THIS ADDRESS AND LOCALHOST POINTS TO THE CLIENT
         // Need to get some sort of static IP going
-        togglePort: "http://192.168.137.139:80/togglePort",
-        shift: "http://192.168.137.139:80/shift"
+        togglePort: "http://localhost:80/togglePort",
+        shift: "http://localhost:80/shift"
       }
     };
   },

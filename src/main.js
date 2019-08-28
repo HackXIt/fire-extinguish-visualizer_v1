@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router.js";
-import VueAwesomeCountdown from "vue-awesome-countdown"
+import VueAwesomeCountdown from "vue-awesome-countdown";
 
 Vue.use(VueAwesomeCountdown);
 Vue.config.productionTip = false;
