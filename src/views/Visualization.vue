@@ -1,29 +1,54 @@
 <template>
   <div id="content">
-    <vue-draggable-resizable v-for="visual in visuals" :key="visual.port.name" class="port">
-      <b>{{ visual.description }}</b>
-      <br />
-      {{ `BoardType: ${visual.board.boardType}` }}
-      <br />
-      {{ `PortID: ${visual.port.id}` }}
-      <br />
-      {{ `PortName: ${visual.port.name}` }}
-      <br />
-      <div v-if="isIM8orVDS(visual.board.boardType)">
-        <button
-          v-for="(io, index) in visual.IO"
-          :key="index"
-          @click="sendByte(io, visual.port.name)"
-        >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
-      </div>
-      <div v-else>
-        <div v-for="(io, index) in visual.IO" :key="index">
+    <!-- <div style="height: 500px; width: 500px; border: 1px solid red; position: relative;">
+      <vue-draggable-resizable
+        :w="100"
+        :h="100"
+        @dragging="onDrag"
+        @resizing="onResize"
+        :parent="true"
+      >
+        <p>
+          Hello! I'm a flexible component. You can drag me around and you can resize me.
+          <br />
+          X: {{ x }} / Y: {{ y }} - Width: {{ width }} / Height: {{ height }}
+        </p>
+      </vue-draggable-resizable>
+    </div>-->
+    <div v-for="visual in visuals" :key="visual.port.name" class="port">
+      <vue-draggable-resizable :parent="true">
+        <p>
+          <b>{{ visual.description }}</b>
+          <br />
+          {{ `BoardType: ${visual.board.boardType}` }}
+          <br />
+          {{ `PortID: ${visual.port.id}` }}
+          <br />
+          {{ `PortName: ${visual.port.name}` }}
+          <br />
+        </p>
+      </vue-draggable-resizable>
+      <vue-draggable-resizable
+        v-for="(io, index) in visual.IO"
+        :key="index"
+        :parent="true"
+        :resizable="false"
+        :w="100"
+        :h="50"
+        class="pin"
+      >
+        <div v-if="isIM8orVDS(visual.board.boardType)">
+          <button
+            @click="sendByte(io, visual.port.name)"
+          >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
+        </div>
+        <div v-else>
           {{ `OM8-${io}` }}
           <!-- active|positive|intermediary|negative -->
           <status-indicator status="active" />
         </div>
-      </div>
-    </vue-draggable-resizable>
+      </vue-draggable-resizable>
+    </div>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
@@ -45,6 +70,10 @@ export default {
   name: "Visualization",
   data() {
     return {
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
       visuals: [],
       counters: [],
       paths: {
@@ -83,6 +112,16 @@ export default {
     });
   },
   methods: {
+    onResize: function(x, y, width, height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+    },
+    onDrag: function(x, y) {
+      this.x = x;
+      this.y = y;
+    },
     isIM8orVDS(typeText) {
       if (typeText === "im8" || typeText === "vds") {
         return true;
@@ -117,18 +156,30 @@ export default {
 /*** EXAMPLE ***/
 #content {
   width: 100%;
-  background-image: url("../assets/visuals_bg.png");
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 1600px;
-  width: 1000px;
 }
 .port {
   box-sizing: border-box;
-  width: fit-content;
-  border: 1px dashed red;
   box-align: center;
+  background-image: url("../assets/visuals_bg.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 500px;
+  width: 1000px;
+  position: relative;
+  border: 1px solid red;
 }
+.boxless {
+  margin: 0;
+  padding: 0;
+}
+.pin {
+  width: 50px;
+  height: 50px;
+  border: 1px solid green;
+}
+
+// This is the css for vue-draggable-resizable
+// DON'T EDIT unless customization is needed
 .vdr {
   touch-action: none;
   position: absolute;
