@@ -55,7 +55,7 @@ export default {
         // THIS NEEDS TO HAVE THE IP OF THE RASPBERRY PI
         // THE BROWSER REFERENCES THIS ADDRESS AND LOCALHOST POINTS TO THE CLIENT
         // Need to get some sort of static IP going or hostname
-        togglePort: `http://${firePi}/togglePort`,
+        cleanup: `http://${firePi}/cleanup`,
         shift: `http://${firePi}/shift`
       }
     };
@@ -64,15 +64,6 @@ export default {
     if (localStorage.getItem("submissions")) {
       try {
         this.visuals = JSON.parse(localStorage.getItem("submissions"));
-        this.visuals.forEach(visual => {
-          const payload = {
-            port: visual.port.name,
-            trigger: 0
-          };
-          axios.post(this.paths.togglePort, payload).catch(error => {
-            console.error(error);
-          });
-        });
       } catch (e) {
         // NOTE Destroy data if invalid
         console.debug(e);
@@ -89,14 +80,8 @@ export default {
     }
   },
   beforeDestroy() {
-    this.visuals.forEach(visual => {
-      const payload = {
-        port: visual.port.name,
-        trigger: 1
-      };
-      axios.post(this.paths.togglePort, payload).catch(error => {
-        console.error(error);
-      });
+    axios.post(this.paths.cleanup).catch(error => {
+      console.error(error);
     });
   },
   methods: {
