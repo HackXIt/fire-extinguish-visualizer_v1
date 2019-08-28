@@ -3,9 +3,11 @@ import App from "./App.vue";
 import router from "./router.js";
 import VueAwesomeCountdown from "vue-awesome-countdown";
 import VueStatusIndicator from "vue-status-indicator";
+import VueDraggableResizable from "vue-draggable-resizable";
 
 Vue.use(VueAwesomeCountdown);
 Vue.use(VueStatusIndicator);
+Vue.component('vue-draggable-resizable', VueDraggableResizable)
 Vue.config.productionTip = false;
 
 export const eventBus = new Vue();

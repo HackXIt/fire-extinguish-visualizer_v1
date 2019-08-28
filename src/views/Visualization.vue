@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <div v-for="visual in visuals" :key="visual.port.name" class="port">
+    <vue-draggable-resizable v-for="visual in visuals" :key="visual.port.name" class="port">
       <b>{{ visual.description }}</b>
       <br />
       {{ `BoardType: ${visual.board.boardType}` }}
@@ -23,7 +23,7 @@
           <status-indicator status="active" />
         </div>
       </div>
-    </div>
+    </vue-draggable-resizable>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import VueDraggableResizable from "vue-draggable-resizable";
 import axios from "axios";
 import { firePi } from "@/variables.js";
 export default {
@@ -127,5 +128,73 @@ export default {
   width: fit-content;
   border: 1px dashed red;
   box-align: center;
+}
+.vdr {
+  touch-action: none;
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px dashed black;
+}
+.handle {
+  box-sizing: border-box;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #eee;
+  border: 1px solid #333;
+}
+.handle-tl {
+  top: -10px;
+  left: -10px;
+  cursor: nw-resize;
+}
+.handle-tm {
+  top: -10px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: n-resize;
+}
+.handle-tr {
+  top: -10px;
+  right: -10px;
+  cursor: ne-resize;
+}
+.handle-ml {
+  top: 50%;
+  margin-top: -5px;
+  left: -10px;
+  cursor: w-resize;
+}
+.handle-mr {
+  top: 50%;
+  margin-top: -5px;
+  right: -10px;
+  cursor: e-resize;
+}
+.handle-bl {
+  bottom: -10px;
+  left: -10px;
+  cursor: sw-resize;
+}
+.handle-bm {
+  bottom: -10px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: s-resize;
+}
+.handle-br {
+  bottom: -10px;
+  right: -10px;
+  cursor: se-resize;
+}
+@media only screen and (max-width: 768px) {
+  [class*="handle-"]:before {
+    content: "";
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    top: -10px;
+    position: absolute;
+  }
 }
 </style>
