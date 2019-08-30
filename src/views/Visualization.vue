@@ -1,20 +1,5 @@
 <template>
   <div id="content">
-    <!-- <div style="height: 500px; width: 500px; border: 1px solid red; position: relative;">
-      <vue-draggable-resizable
-        :w="100"
-        :h="100"
-        @dragging="onDrag"
-        @resizing="onResize"
-        :parent="true"
-      >
-        <p>
-          Hello! I'm a flexible component. You can drag me around and you can resize me.
-          <br />
-          X: {{ x }} / Y: {{ y }} - Width: {{ width }} / Height: {{ height }}
-        </p>
-      </vue-draggable-resizable>
-    </div>-->
     <div v-for="visual in visuals" :key="visual.port.name" class="port">
       <vue-draggable-resizable :parent="true">
         <p>
@@ -38,9 +23,9 @@
         class="pin"
       >
         <div v-if="isIM8orVDS(visual.board.boardType)">
-          <button
-            @click="sendByte(io, visual.port.name)"
-          >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
+          <button @click="sendByte(io, visual.port.name)">
+            {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
+          </button>
         </div>
         <div v-else>
           {{ `OM8-${io}` }}
@@ -54,8 +39,14 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
-        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds * 1000"
+        :autoStart="false"
+      >
+        <span slot="process" slot-scope="{ timeObj }">
+          {{ timeObj.ceil.s }}
+        </span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -63,17 +54,13 @@
 </template>
 
 <script>
-import VueDraggableResizable from "vue-draggable-resizable";
+// import VueDraggableResizable from "vue-draggable-resizable";
 import axios from "axios";
 import { firePi } from "@/variables.js";
 export default {
   name: "Visualization",
   data() {
     return {
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
       visuals: [],
       counters: [],
       paths: {
@@ -112,16 +99,6 @@ export default {
     });
   },
   methods: {
-    onResize: function(x, y, width, height) {
-      this.x = x;
-      this.y = y;
-      this.width = width;
-      this.height = height;
-    },
-    onDrag: function(x, y) {
-      this.x = x;
-      this.y = y;
-    },
     isIM8orVDS(typeText) {
       if (typeText === "im8" || typeText === "vds") {
         return true;

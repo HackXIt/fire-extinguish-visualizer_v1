@@ -98,11 +98,16 @@ export default {
     console.debug("Setup: beforeDestroy() triggered.");
     console.debug("Sending setup-data to FireFlask");
     const path = `http://${firePi}/setup`;
-    const payload = {
-      submissions: this.submissions
-    };
-    axios.post(path, payload).catch(error => {
-      console.error(error);
+    this.submissions.forEach(submission => {
+      const payload = {
+        port: submission.port.name,
+        gpio: submission.port.gpio,
+        board: submission.board.boardType
+      };
+      console.debug(payload);
+      axios.post(path, payload).catch(error => {
+        console.error(error);
+      });
     });
   },
   methods: {

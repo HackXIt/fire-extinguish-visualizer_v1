@@ -7,7 +7,7 @@ import VueDraggableResizable from "vue-draggable-resizable";
 
 Vue.use(VueAwesomeCountdown);
 Vue.use(VueStatusIndicator);
-Vue.component('vue-draggable-resizable', VueDraggableResizable)
+Vue.component("vue-draggable-resizable", VueDraggableResizable);
 Vue.config.productionTip = false;
 
 export const eventBus = new Vue();
