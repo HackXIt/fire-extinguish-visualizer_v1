@@ -23,9 +23,9 @@
         class="pin"
       >
         <div v-if="isIM8orVDS(visual.board.boardType)">
-          <button @click="sendByte(io, visual.port.name)">
-            {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
-          </button>
+          <button
+            @click="sendByte(io, visual.port.name)"
+          >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
         </div>
         <div v-else>
           {{ `OM8-${io}` }}
@@ -39,14 +39,8 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac
-        :ref="`vac${counter.id}`"
-        :leftTime="counter.seconds * 1000"
-        :autoStart="false"
-      >
-        <span slot="process" slot-scope="{ timeObj }">
-          {{ timeObj.ceil.s }}
-        </span>
+      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
+        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -70,7 +64,8 @@ export default {
         // Need to get some sort of static IP going or hostname
         cleanup: `http://${firePi}/cleanup`,
         shift: `http://${firePi}/shift`
-      }
+      },
+      polling: null
     };
   },
   mounted() {
@@ -93,12 +88,19 @@ export default {
     }
   },
   beforeDestroy() {
+    console.debug("Clearing Polling");
+    clearInterval(this.polling);
     console.debug("Sending cleanup request to FireFlask");
     axios.post(this.paths.cleanup).catch(error => {
       console.error(error);
     });
   },
   methods: {
+    pollData() {
+      this.polling = setInterval(() => {
+        console.debug("Polling-Test");
+      }, 5000);
+    },
     isIM8orVDS(typeText) {
       if (typeText === "im8" || typeText === "vds") {
         return true;
