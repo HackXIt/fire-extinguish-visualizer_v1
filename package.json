@@ -16,6 +16,7 @@
     "vue-circular-count-down-timer": "^1.0.4",
     "vue-draggable-resizable": "^2.0.0-rc2",
     "vue-grid-layout": "^2.3.4",
+    "vue-polling": "^0.1.14",
     "vue-router": "^3.0.3",
     "vue-status-indicator": "^1.2.1"
   },

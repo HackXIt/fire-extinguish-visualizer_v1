@@ -30,6 +30,19 @@
         <div v-else>
           {{ `OM8-${io}` }}
           <!-- active|positive|intermediary|negative -->
+          <vue-polling
+            :url="'localhost:8080'"
+            :interval="3000"
+            :retryCount="2"
+            :onSuccess="handleSuccess"
+            :onFailure="handleFailure"
+            :method="GET"
+          >
+            <div slot="vue-polling" slot-scope="{ isPolling, startPolling, stopPolling }">
+              <p v-if="isPolling">Hi I am polling</p>
+              <p v-else>Hi I am not polling</p>
+            </div>
+          </vue-polling>
           <status-indicator status="active" />
         </div>
       </vue-draggable-resizable>
@@ -49,10 +62,14 @@
 
 <script>
 // import VueDraggableResizable from "vue-draggable-resizable";
+import VuePolling from "vue-polling";
 import axios from "axios";
 import { firePi } from "@/variables.js";
 export default {
   name: "Visualization",
+  components: {
+    VuePolling
+  },
   data() {
     return {
       visuals: [],
@@ -64,8 +81,7 @@ export default {
         // Need to get some sort of static IP going or hostname
         cleanup: `http://${firePi}/cleanup`,
         shift: `http://${firePi}/shift`
-      },
-      polling: null
+      }
     };
   },
   mounted() {
@@ -88,18 +104,19 @@ export default {
     }
   },
   beforeDestroy() {
-    console.debug("Clearing Polling");
-    clearInterval(this.polling);
     console.debug("Sending cleanup request to FireFlask");
     axios.post(this.paths.cleanup).catch(error => {
       console.error(error);
     });
   },
   methods: {
-    pollData() {
-      this.polling = setInterval(() => {
-        console.debug("Polling-Test");
-      }, 5000);
+    handleSuccess(response) {
+      console.debug("Received shift data");
+      return true;
+    },
+    handleFailure() {
+      console.debug("Failed to poll data");
+      return false;
     },
     isIM8orVDS(typeText) {
       if (typeText === "im8" || typeText === "vds") {
