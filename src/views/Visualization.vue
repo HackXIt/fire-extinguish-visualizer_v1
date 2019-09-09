@@ -30,7 +30,10 @@
         <div v-else>
           {{ `OM8-${io}` }}
           <!-- active|positive|intermediary|negative -->
-          <status-indicator :status="status" />
+          <status-indicator
+            :ref="`${visual.port.name}io${io}`"
+            :status="status(visual.pinStates[io])"
+          />
         </div>
       </vue-draggable-resizable>
     </div>
@@ -82,14 +85,16 @@ export default {
         );
         this.visuals[val].IO.forEach(io => {
           this.visuals[val].pinStates[io] = newResponse.pinStates[io - 1];
+          this.$nextTick(() => {
+            this.$refs[`${newResponse.port}io${io}`][0].status = this.visuals[
+              val
+            ].pinStates[io]
+              ? "positive"
+              : "negative";
+          });
         });
       },
       deep: true
-    }
-  },
-  computed: {
-    status() {
-      return "active";
     }
   },
   mounted() {
@@ -136,13 +141,15 @@ export default {
       .catch(error => {
         console.error(error);
       });
-    console.debug("Clearing intervals:");
     this.pollings.forEach(interval => {
-      console.debug(`Clearing {${interval}}`);
+      console.debug(`Clearing interval {${interval}}`);
       clearInterval(interval);
     });
   },
   methods: {
+    status(state) {
+      return state ? "positive" : "negative";
+    },
     isIM8orVDS(typeText) {
       if (typeText === "im8" || typeText === "vds") {
         return true;
