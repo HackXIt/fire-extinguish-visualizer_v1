@@ -85,6 +85,10 @@ export default {
         );
         this.visuals[val].IO.forEach(io => {
           this.visuals[val].pinStates[io] = newResponse.pinStates[io - 1];
+          // FIXME This mutates the prop of status-indicator, thus creating warnings
+          // This is considered an anti-pattern
+          // a computed property or data should be used instead
+          // Need to figure out how to make that work for every input individually
           this.$nextTick(() => {
             this.$refs[`${newResponse.port}io${io}`][0].status = this.visuals[
               val
