@@ -23,9 +23,9 @@
         class="pin"
       >
         <div v-if="isIM8orVDS(visual.board.boardType)">
-          <button @click="sendByte(io, visual.port.name)">
-            {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
-          </button>
+          <button
+            @click="sendByte(io, visual.port.name)"
+          >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
         </div>
         <div v-else>
           {{ `OM8-${io}` }}
@@ -39,14 +39,12 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac
-        :ref="`vac${counter.id}`"
-        :leftTime="counter.seconds * 1000"
-        :autoStart="false"
-      >
-        <span slot="process" slot-scope="{ timeObj }">{{
+      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
+        <span slot="process" slot-scope="{ timeObj }">
+          {{
           timeObj.ceil.s
-        }}</span>
+          }}
+        </span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -79,9 +77,12 @@ export default {
     response: {
       handler(newResponse) {
         console.debug("New response received from Server");
-        console.debug(
-          this.visuals.find(visual => visual.port.name === newResponse.port)
+        const val = this.visuals.findIndex(
+          visual => visual.port.name === newResponse.port
         );
+        this.visuals[val].IO.forEach(io => {
+          this.visuals[val].pinStates[io] = newResponse.pinStates[io - 1];
+        });
       },
       deep: true
     }
@@ -113,9 +114,7 @@ export default {
       this.visuals.forEach(visual => {
         if (visual.board.boardType === "om8") {
           console.debug(
-            `Creating interval for ${visual.board.boardType}@${
-              visual.port.name
-            }`
+            `Creating interval for ${visual.board.boardType}@${visual.port.name}`
           );
           var interval = setInterval(() => {
             this.sendByte(visual.IO, visual.port.name);
