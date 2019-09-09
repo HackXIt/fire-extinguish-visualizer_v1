@@ -23,14 +23,14 @@
         class="pin"
       >
         <div v-if="isIM8orVDS(visual.board.boardType)">
-          <button
-            @click="sendByte(io, visual.port.name)"
-          >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
+          <button @click="sendByte(io, visual.port.name)">
+            {{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}
+          </button>
         </div>
         <div v-else>
           {{ `OM8-${io}` }}
           <!-- active|positive|intermediary|negative -->
-          <status-indicator status="active" />
+          <status-indicator :status="status" />
         </div>
       </vue-draggable-resizable>
     </div>
@@ -39,8 +39,14 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
-        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds * 1000"
+        :autoStart="false"
+      >
+        <span slot="process" slot-scope="{ timeObj }">{{
+          timeObj.ceil.s
+        }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -49,14 +55,10 @@
 
 <script>
 // import VueDraggableResizable from "vue-draggable-resizable";
-// import VuePolling from "vue-polling";
 import axios from "axios";
 import { firePi } from "@/variables.js";
 export default {
   name: "Visualization",
-  // components: {
-  //   VuePolling
-  // },
   data() {
     return {
       visuals: [],
@@ -68,8 +70,26 @@ export default {
         // Need to get some sort of static IP going or hostname
         cleanup: `http://${firePi}/cleanup`,
         shift: `http://${firePi}/shift`
-      }
+      },
+      pollings: [],
+      response: null
     };
+  },
+  watch: {
+    response: {
+      handler(newResponse) {
+        console.debug("New response received from Server");
+        console.debug(
+          this.visuals.find(visual => visual.port.name === newResponse.port)
+        );
+      },
+      deep: true
+    }
+  },
+  computed: {
+    status() {
+      return "active";
+    }
   },
   mounted() {
     if (localStorage.getItem("submissions")) {
@@ -89,22 +109,41 @@ export default {
         localStorage.removeItem("delays");
       }
     }
+    if (this.visuals) {
+      this.visuals.forEach(visual => {
+        if (visual.board.boardType === "om8") {
+          console.debug(
+            `Creating interval for ${visual.board.boardType}@${
+              visual.port.name
+            }`
+          );
+          var interval = setInterval(() => {
+            this.sendByte(visual.IO, visual.port.name);
+          }, 5000);
+          this.pollings.push(interval);
+        }
+      });
+    }
   },
   beforeDestroy() {
-    console.debug("Sending cleanup request to FireFlask");
-    axios.post(this.paths.cleanup).catch(error => {
-      console.error(error);
+    console.debug("Sent cleanup request to FireFlask");
+    axios
+      .post(this.paths.cleanup)
+      .then(response => {
+        console.debug(
+          `Cleanup? Status-Code: ${response.status} - ${response.data.status}`
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    console.debug("Clearing intervals:");
+    this.pollings.forEach(interval => {
+      console.debug(`Clearing {${interval}}`);
+      clearInterval(interval);
     });
   },
   methods: {
-    handleSuccess(response) {
-      console.debug("Received shift data");
-      return true;
-    },
-    handleFailure() {
-      console.debug("Failed to poll data");
-      return false;
-    },
     isIM8orVDS(typeText) {
       if (typeText === "im8" || typeText === "vds") {
         return true;
@@ -119,9 +158,17 @@ export default {
         port
       };
       console.debug(payload);
-      axios.post(this.paths.shift, payload).catch(error => {
-        console.error(error);
-      });
+      axios
+        .post(this.paths.shift, payload)
+        .then(response => {
+          console.debug(
+            `Shift? Status-Code ${response.status} - ${response.data.status}`
+          );
+          this.response = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
     switchCountdown(ref, id) {
       // console.debug(this.$refs[ref][0])

@@ -176,10 +176,12 @@ export default {
             name: this.portSelection.name,
             gpio: Object.create(this.portSelection.gpio)
           },
-          IO: []
+          IO: [],
+          pinStates: {}
         };
         for (var i = 1; i <= this.amount; i++) {
           boardSelection.IO.push(i);
+          boardSelection.pinStates[i] = 0;
         }
         for (var j = 1; j <= this.variantSelection.gpio.length; j++) {
           boardSelection.port.gpio[this.variantSelection.gpio[j - 1]] =
