@@ -36,7 +36,7 @@
             :retryCount="2"
             :onSuccess="handleSuccess"
             :onFailure="handleFailure"
-            :method="GET"
+            :method="'GET'"
           >
             <div slot="vue-polling" slot-scope="{ isPolling, startPolling, stopPolling }">
               <p v-if="isPolling">Hi I am polling</p>
@@ -62,14 +62,14 @@
 
 <script>
 // import VueDraggableResizable from "vue-draggable-resizable";
-import VuePolling from "vue-polling";
+// import VuePolling from "vue-polling";
 import axios from "axios";
 import { firePi } from "@/variables.js";
 export default {
   name: "Visualization",
-  components: {
-    VuePolling
-  },
+  // components: {
+  //   VuePolling
+  // },
   data() {
     return {
       visuals: [],
