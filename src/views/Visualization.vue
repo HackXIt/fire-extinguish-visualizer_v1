@@ -30,19 +30,6 @@
         <div v-else>
           {{ `OM8-${io}` }}
           <!-- active|positive|intermediary|negative -->
-          <vue-polling
-            :url="'localhost:8080'"
-            :interval="3000"
-            :retryCount="2"
-            :onSuccess="handleSuccess"
-            :onFailure="handleFailure"
-            :method="'GET'"
-          >
-            <div slot="vue-polling" slot-scope="{ isPolling, startPolling, stopPolling }">
-              <p v-if="isPolling">Hi I am polling</p>
-              <p v-else>Hi I am not polling</p>
-            </div>
-          </vue-polling>
           <status-indicator status="active" />
         </div>
       </vue-draggable-resizable>
