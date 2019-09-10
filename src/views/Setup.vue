@@ -4,12 +4,7 @@
     <boardSelect class="boardSelect" />
     <configOptions class="boardOptions" :submissions="submissions" />
     <button class="addDelay" @click="addDelay">Add delayElement</button>
-    <delayElement
-      class="delayOptions"
-      v-for="n in delays.length"
-      :key="n"
-      v-model="delays[n - 1]"
-    />
+    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
   </div>
 </template>
 
@@ -25,7 +20,6 @@ export default {
     boardSelect,
     configOptions,
     delayElement
-    // TODO delayElement
   },
   data() {
     return {
@@ -73,7 +67,7 @@ export default {
     eventBus.$on("delete-delay", elem => {
       console.debug("delete-delay event fired");
       // FIXME Poor implementation of delete
-      //  possible to delete wrong delay when two equal objects are available
+      // possible to delete wrong delay when two equal objects are available
       this.delays.splice(this.delays.findIndex(x => x === elem), 1);
     });
     // NOTE Using localStorage to provide data on Reload
@@ -87,7 +81,7 @@ export default {
           eventBus.$emit("disable-port", item.port.id);
         });
       } catch (e) {
-        // NOTE Destroy data if invalid
+        // NOTE This destroys localStorage data if invalid
         localStorage.removeItem("submissions");
       }
     }

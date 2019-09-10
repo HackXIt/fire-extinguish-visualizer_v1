@@ -54,6 +54,7 @@ export default {
         }
       },
       // NOTE https://www.flaticon.com/packs/hand-gestures-6
+      // TODO The pictures are actually not used currently
       variants: [
         {
           id: 1,

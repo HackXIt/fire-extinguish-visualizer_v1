@@ -65,7 +65,7 @@ export default {
       visuals: [],
       counters: [],
       paths: {
-        // FIXME Network-Error
+        // FIXME Network-Error when using localhost as IP
         // THIS NEEDS TO HAVE THE IP OF THE RASPBERRY PI
         // THE BROWSER REFERENCES THIS ADDRESS AND LOCALHOST POINTS TO THE CLIENT
         // Need to get some sort of static IP going or hostname
@@ -106,7 +106,7 @@ export default {
       try {
         this.visuals = JSON.parse(localStorage.getItem("submissions"));
       } catch (e) {
-        // NOTE Destroy data if invalid
+        // NOTE This destroys localStorage data if invalid
         console.debug(e);
         localStorage.removeItem("submissions");
       }
@@ -119,6 +119,10 @@ export default {
         localStorage.removeItem("delays");
       }
     }
+    // FIXME Polling is very resource-intensive
+    // A better approach would be to use WebSockets
+    // That would allow for the Flask Server to send data on change
+    // And the frontend would just have to wait for newResponses
     if (this.visuals) {
       this.visuals.forEach(visual => {
         if (visual.board.boardType === "om8") {
