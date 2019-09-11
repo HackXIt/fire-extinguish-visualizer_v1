@@ -11,7 +11,7 @@
       <br />
       <b>Board:</b>
       {{
-      `${visual.board.boardType.toUpperCase()} [${visual.IO.length}x${
+      `${visual.board.boardType.toUpperCase()} [${visual.IO.length} x ${
       visual.board.rpiType
       }(s)]`
       }}
@@ -45,7 +45,6 @@
           })`
           }}
         </button>
-        <!-- FIXME Output is not updated after receiving response -->
         <status-indicator
           :status="wrapper.state ? 'active' : 'intermediary'"
           :pulse="wrapper.state ? true : false"
