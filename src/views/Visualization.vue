@@ -1,53 +1,79 @@
 <template>
   <div id="content">
-    <div v-for="visual in visuals" :key="visual.port.name" class="port">
-      <vue-draggable-resizable :parent="true">
-        <p>
-          <b>{{ visual.description }}</b>
-          <br />
-          {{ `BoardType: ${visual.board.boardType}` }}
-          <br />
-          {{ `PortID: ${visual.port.id}` }}
-          <br />
-          {{ `PortName: ${visual.port.name}` }}
-          <br />
-        </p>
-      </vue-draggable-resizable>
-      <vue-draggable-resizable
-        v-for="(io, index) in visual.IO"
-        :key="index"
-        :parent="true"
-        :resizable="false"
-        :w="100"
-        :h="50"
-        class="pin"
+    <div
+      v-for="visual in visuals"
+      :key="`[${visual.port.id}]-${visual.port.name}`"
+      class="label"
+      :style="positionLabel(visual)"
+    >
+      <b>Port:</b>
+      {{ `${visual.port.id}=${visual.port.name}` }}
+      <br />
+      <b>Board:</b>
+      {{
+        `${visual.board.boardType.toUpperCase()} [${visual.IO.length}x${
+          visual.board.rpiType
+        }(s)]`
+      }}
+      <br />
+      <b>Name:</b>
+      {{ visual.port.name }}
+      <br />
+      <button
+        v-if="visual.board.rpiType === 'input'"
+        @click="togglePolling(visual)"
       >
-        <div v-if="isIM8orVDS(visual.board.boardType)">
-          <button
-            @click="sendByte(io, visual.port.name)"
-          >{{ `${index}: ${visual.board.boardType.toUpperCase()}-${io}` }}</button>
-        </div>
-        <div v-else>
-          {{ `OM8-${io}` }}
-          <!-- active|positive|intermediary|negative -->
-          <status-indicator
-            :ref="`${visual.port.name}io${io}`"
-            :status="status(visual.pinStates[io])"
-          />
-        </div>
-      </vue-draggable-resizable>
+        {{ `Polling: ${pollings[visual.port.id - 1].active ? "On" : "Off"}` }}
+      </button>
+      <br />
     </div>
+    <vue-draggable-resizable
+      v-for="wrapper in flattenVisuals(visuals)"
+      :key="wrapper.key"
+      class="pin"
+      :parent="true"
+      :resizable="false"
+      :draggable="true"
+      :h="100"
+      :w="100"
+      :x="wrapper.pos * 100"
+      :y="wrapper.objIndex * 100"
+    >
+      <div v-if="wrapper.ioType === 'output'">
+        <button @click="sendByte(wrapper.io, wrapper.port)">
+          {{
+            `${wrapper.boardType.toUpperCase()}-${wrapper.io} (${
+              wrapper.state ? "Off" : "On"
+            })`
+          }}
+        </button>
+        <status-indicator
+          :status="wrapper.state ? 'active' : 'intermediary'"
+          :pulse="wrapper.state ? true : false"
+        />
+      </div>
+      <div v-else>
+        {{ `${wrapper.boardType}-${wrapper.io} => ` }}
+        <status-indicator
+          :status="wrapper.state ? 'positive' : 'negative'"
+          :pulse="wrapper.state ? true : false"
+        />
+        <!-- TODO Insert custom image for IO-State-->
+      </div>
+    </vue-draggable-resizable>
     <div class="counters" v-for="counter in counters" :key="counter.id">
       <button
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
-        <span slot="process" slot-scope="{ timeObj }">
-          {{
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds * 1000"
+        :autoStart="false"
+      >
+        <span slot="process" slot-scope="{ timeObj }">{{
           timeObj.ceil.s
-          }}
-        </span>
+        }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -80,22 +106,12 @@ export default {
     response: {
       handler(newResponse) {
         console.debug("New response received from Server");
-        const val = this.visuals.findIndex(
+        const visualIndex = this.visuals.findIndex(
           visual => visual.port.name === newResponse.port
         );
-        this.visuals[val].IO.forEach(io => {
-          this.visuals[val].pinStates[io] = newResponse.pinStates[io - 1];
-          // FIXME This mutates the prop of status-indicator, thus creating warnings
-          // This is considered an anti-pattern
-          // a computed property or data should be used instead
-          // Need to figure out how to make that work for every input individually
-          this.$nextTick(() => {
-            this.$refs[`${newResponse.port}io${io}`][0].status = this.visuals[
-              val
-            ].pinStates[io]
-              ? "positive"
-              : "negative";
-          });
+        this.visuals[visualIndex].IO.forEach(io => {
+          this.visuals[visualIndex].pinStates[io] =
+            newResponse.pinStates[io - 1];
         });
       },
       deep: true
@@ -127,12 +143,25 @@ export default {
       this.visuals.forEach(visual => {
         if (visual.board.boardType === "om8") {
           console.debug(
-            `Creating interval for ${visual.board.boardType}@${visual.port.name}`
+            `Creating interval for ${visual.board.boardType} @ ${
+              visual.port.name
+            }`
           );
-          var interval = setInterval(() => {
+          const interval = setInterval(() => {
             this.sendByte(visual.IO, visual.port.name);
           }, 5000);
-          this.pollings.push(interval);
+          const polling = {
+            interval: interval,
+            id: visual.port.id,
+            port: visual.port.name,
+            active: true
+          };
+          this.pollings.push(polling);
+          console.debug(
+            `Created interval [${polling.interval}] for ${
+              visual.board.boardType
+            } @ ${polling.port}`
+          );
         }
       });
     }
@@ -147,24 +176,36 @@ export default {
         );
       })
       .catch(error => {
-        console.error(error);
+        // Error 😨
+        if (error.response) {
+          /*
+           * The request was made and the server responded with a
+           * status code that falls out of the range of 2xx
+           */
+          console.error(error.response.data);
+          console.error(error.response.status);
+          console.error(error.response.headers);
+        } else if (error.request) {
+          /*
+           * The request was made but no response was received, `error.request`
+           * is an instance of XMLHttpRequest in the browser and an instance
+           * of http.ClientRequest in Node.js
+           */
+          console.error(error.request);
+        } else {
+          // Something happened in setting up the request and triggered an Error
+          console.error("Error", error.message);
+        }
+        console.error(error.config);
       });
-    this.pollings.forEach(interval => {
-      console.debug(`Clearing interval {${interval}}`);
-      clearInterval(interval);
+    this.pollings.forEach(polling => {
+      console.debug(
+        `Clearing interval [${polling.interval}] of ${polling.port}`
+      );
+      clearInterval(polling.interval);
     });
   },
   methods: {
-    status(state) {
-      return state ? "positive" : "negative";
-    },
-    isIM8orVDS(typeText) {
-      if (typeText === "im8" || typeText === "vds") {
-        return true;
-      } else {
-        return false;
-      }
-    },
     sendByte(pin, port) {
       console.debug(`Setting ${pin} on ${port}`);
       const payload = {
@@ -176,12 +217,34 @@ export default {
         .post(this.paths.shift, payload)
         .then(response => {
           console.debug(
-            `Shift? Status-Code ${response.status} - ${response.data.status}`
+            `Shift? Status-Code ${response.status} - ${
+              response.data.status
+            } [${pin}]@${port}`
           );
           this.response = response.data;
         })
         .catch(error => {
-          console.error(error);
+          // Error 😨
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            console.error(error.response.data);
+            console.error(error.response.status);
+            console.error(error.response.headers);
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            console.error(error.request);
+          } else {
+            // Something happened in setting up the request and triggered an Error
+            console.error("Error", error.message);
+          }
+          console.error(error.config);
         });
     },
     switchCountdown(ref, id) {
@@ -191,6 +254,57 @@ export default {
         this.counters[id - 1].state =
           this.$refs[ref][0].state === "stoped" ? "On" : "Off";
       });
+    },
+    flattenVisuals(visuals) {
+      console.debug("Flattening visuals...");
+      return visuals.flatMap((visual, index) => {
+        return visual.IO.map((io, pos) => {
+          return {
+            port: visual.port.name,
+            portID: visual.port.id,
+            boardType: visual.board.boardType,
+            ioType: visual.board.rpiType,
+            io: io,
+            pos: pos,
+            state: visual.pinStates[io],
+            objIndex: index,
+            key: `${visual.board.boardType}-${io}@${visual.port.port}`
+          };
+        });
+      });
+    },
+    positionLabel(visual) {
+      return {
+        height: 100 + "px",
+        width: 200 + "px",
+        position: "absolute",
+        top: (visual.port.id - 1) * 100 + "px",
+        left: -210 + "px"
+      };
+    },
+    togglePolling(visual) {
+      const index = this.pollings.findIndex(
+        polling => polling.id === visual.port.id
+      );
+      if (this.pollings[index].active) {
+        console.debug(
+          `Clearing interval [${this.pollings[index].interval}] of ${
+            visual.board.boardType
+          } @ ${visual.port.name}`
+        );
+        clearInterval(this.pollings[index].interval);
+        this.pollings[index].active = false;
+      } else {
+        this.pollings[index].interval = setInterval(() => {
+          this.sendByte(visual.IO, visual.port.name);
+        }, 5000);
+        this.pollings[index].active = true;
+        console.debug(
+          `Created interval [${this.pollings[index].interval}] for ${
+            visual.board.boardType
+          } @ ${visual.port.name}`
+        );
+      }
     }
   }
 };
@@ -199,29 +313,22 @@ export default {
 <style lang="scss">
 /*** EXAMPLE ***/
 #content {
-  width: 100%;
-}
-.port {
-  box-sizing: border-box;
-  box-align: center;
   background-image: url("../assets/visuals_bg.png");
   background-repeat: no-repeat;
   background-size: contain;
   height: 500px;
   width: 1000px;
+  margin: auto;
+  border: 2px solid black;
   position: relative;
-  border: 1px solid red;
 }
-.boxless {
-  margin: 0;
-  padding: 0;
+.label {
+  border: 1px dashed grey;
+  position: relative;
 }
 .pin {
-  width: 50px;
-  height: 50px;
-  border: 1px solid green;
+  border: 1px dashed orange;
 }
-
 // This is the css for vue-draggable-resizable
 // DON'T EDIT unless customization is needed
 .vdr {

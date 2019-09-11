@@ -4,7 +4,12 @@
     <boardSelect class="boardSelect" />
     <configOptions class="boardOptions" :submissions="submissions" />
     <button class="addDelay" @click="addDelay">Add delayElement</button>
-    <delayElement class="delayOptions" v-for="n in delays.length" :key="n" v-model="delays[n - 1]" />
+    <delayElement
+      class="delayOptions"
+      v-for="n in delays.length"
+      :key="n"
+      v-model="delays[n - 1]"
+    />
   </div>
 </template>
 
@@ -112,7 +117,27 @@ export default {
           );
         })
         .catch(error => {
-          console.error(error);
+          // Error 😨
+          if (error.response) {
+            /*
+             * The request was made and the server responded with a
+             * status code that falls out of the range of 2xx
+             */
+            console.error(error.response.data);
+            console.error(error.response.status);
+            console.error(error.response.headers);
+          } else if (error.request) {
+            /*
+             * The request was made but no response was received, `error.request`
+             * is an instance of XMLHttpRequest in the browser and an instance
+             * of http.ClientRequest in Node.js
+             */
+            console.error(error.request);
+          } else {
+            // Something happened in setting up the request and triggered an Error
+            console.error("Error", error.message);
+          }
+          console.error(error.config);
         });
     });
   },
