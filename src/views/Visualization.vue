@@ -47,6 +47,7 @@
             })`
           }}
         </button>
+        <!-- FIXME Output is not updated after receiving response -->
         <status-indicator
           :status="wrapper.state ? 'active' : 'intermediary'"
           :pulse="wrapper.state ? true : false"
@@ -54,6 +55,7 @@
       </div>
       <div v-else>
         {{ `${wrapper.boardType}-${wrapper.io} => ` }}
+        <!-- FIXME Input only updates upon DOM-Update by toggleButton
         <status-indicator
           :status="wrapper.state ? 'positive' : 'negative'"
           :pulse="wrapper.state ? true : false"
@@ -71,9 +73,9 @@
         :leftTime="counter.seconds * 1000"
         :autoStart="false"
       >
-        <span slot="process" slot-scope="{ timeObj }">{{
-          timeObj.ceil.s
-        }}</span>
+        <span slot="process" slot-scope="{ timeObj }">
+          {{ timeObj.ceil.s }}
+        </span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
