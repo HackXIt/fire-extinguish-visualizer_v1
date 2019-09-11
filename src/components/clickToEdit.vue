@@ -12,9 +12,7 @@
         max="8"
         v-focus
       />
-      <b v-else @click="edit = true">
-        {{ valueLocal }}
-      </b>
+      <b v-else @click="edit = true">{{ valueLocal }}</b>
     </div>
     <div v-else>
       <input
@@ -25,9 +23,7 @@
         @keyup.enter="changeValue()"
         v-focus
       />
-      <p v-else @click="edit = true">
-        {{ valueLocal }}
-      </p>
+      <p v-else @click="edit = true">{{ valueLocal }}</p>
     </div>
   </div>
 </template>
@@ -56,7 +52,7 @@ export default {
     };
   },
   watch: {
-    value: function() {
+    value: () => {
       this.valueLocal = this.value;
     }
   },

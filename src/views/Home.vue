@@ -12,15 +12,15 @@
       </div>
       <vue-draggable-resizable
         class="simple"
-        v-for="(bit,index) in simpleData"
+        v-for="(bit, index) in simpleData"
         :key="index"
         :w="50"
         :h="50"
         :parent="true"
         :resizable="false"
-        :x="(index+5)*50"
+        :x="(index + 5) * 50"
       >
-        {{`Bit-${index} => `}}
+        {{ `Bit-${index} => ` }}
         <status-indicator :status="bit ? 'positive' : 'negative'" />
       </vue-draggable-resizable>
     </div>
@@ -31,7 +31,7 @@
         v-for="(obj, index) in nestedArrayObj.data"
         :key="obj.name"
         :h="50"
-        :y="index*50"
+        :y="index * 50"
         :resizable="false"
         :draggable="false"
       >
@@ -46,8 +46,8 @@
         :resizable="false"
         :w="100"
         :h="50"
-        :x="(wrapper.index+5)*100"
-        :y="wrapper.objIndex*50"
+        :x="(wrapper.index + 5) * 100"
+        :y="wrapper.objIndex * 50"
         :parent="true"
       >
         <div v-if="wrapper.obj.contentType === 'TypeA'">
@@ -58,7 +58,9 @@
         <div v-else>
           <b>{{ `Bit-${wrapper.index} of ${wrapper.obj.name}` }}</b>
           <br />
-          <status-indicator :status="wrapper.state ? 'active' : 'intermediary'" />
+          <status-indicator
+            :status="wrapper.state ? 'active' : 'intermediary'"
+          />
         </div>
       </vue-draggable-resizable>
     </div>
@@ -69,11 +71,13 @@
         v-for="(obj, index) in nestedObjectObj.data"
         :key="obj.name"
         :h="50"
-        :y="index*50"
+        :y="index * 50"
         :resizable="false"
         :draggable="false"
       >
-        <button @click="nestedObjectXOR(obj.name)">XOR -> {{ obj.name }}</button>
+        <button @click="nestedObjectXOR(obj.name)">
+          XOR -> {{ obj.name }}
+        </button>
         <br />
         {{ Object.values(obj.states) }}
       </vue-draggable-resizable>
@@ -85,8 +89,8 @@
         :w="100"
         :h="50"
         :parent="true"
-        :x="500+(wrapper.io*100)"
-        :y="wrapper.objIndex*50"
+        :x="500 + wrapper.io * 100"
+        :y="wrapper.objIndex * 50"
       >
         <div v-if="wrapper.obj.contentType === 'TypeA'">
           <b>{{ `Bit-${wrapper.io} of ${wrapper.obj.name}` }}</b>
@@ -96,7 +100,9 @@
         <div v-else>
           <b>{{ `Bit-${wrapper.io} of ${wrapper.obj.name}` }}</b>
           <br />
-          <status-indicator :status="wrapper.state ? 'active' : 'intermediary'" />
+          <status-indicator
+            :status="wrapper.state ? 'active' : 'intermediary'"
+          />
         </div>
       </vue-draggable-resizable>
     </div>

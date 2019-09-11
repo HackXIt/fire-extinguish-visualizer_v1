@@ -10,7 +10,8 @@
       <router-view />
     </div>
     <div class="footer">
-      This application was made and designed by Nikolaus Rieder. All Rights reserved.
+      This application was made and designed by Nikolaus Rieder. All Rights
+      reserved.
       <!-- <div>
         Icons made by
         <a
