@@ -10,7 +10,8 @@
       <router-view />
     </div>
     <div class="footer">
-      <div>
+      This application was made and designed by Nikolaus Rieder. All Rights reserved.
+      <!-- <div>
         Icons made by
         <a
           href="https://www.flaticon.com/authors/smashicons"
@@ -54,7 +55,7 @@
           </svg>
         </span>
         <span style="display:inline-block;padding:2px 3px">Tommaso Pecchioli</span>
-      </a>
+      </a> -->
     </div>
   </div>
 </template>
