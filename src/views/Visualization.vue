@@ -11,9 +11,9 @@
       <br />
       <b>Board:</b>
       {{
-        `${visual.board.boardType.toUpperCase()} [${visual.IO.length}x${
-          visual.board.rpiType
-        }(s)]`
+      `${visual.board.boardType.toUpperCase()} [${visual.IO.length}x${
+      visual.board.rpiType
+      }(s)]`
       }}
       <br />
       <b>Name:</b>
@@ -22,9 +22,7 @@
       <button
         v-if="visual.board.rpiType === 'input'"
         @click="togglePolling(visual)"
-      >
-        {{ `Polling: ${pollings[visual.port.id - 1].active ? "On" : "Off"}` }}
-      </button>
+      >{{ `Polling: ${pollings[visual.port.id - 1].active ? "On" : "Off"}` }}</button>
       <br />
     </div>
     <vue-draggable-resizable
@@ -42,9 +40,9 @@
       <div v-if="wrapper.ioType === 'output'">
         <button @click="sendByte(wrapper.io, wrapper.port)">
           {{
-            `${wrapper.boardType.toUpperCase()}-${wrapper.io} (${
-              wrapper.state ? "Off" : "On"
-            })`
+          `${wrapper.boardType.toUpperCase()}-${wrapper.io} (${
+          wrapper.state ? "Off" : "On"
+          })`
           }}
         </button>
         <!-- FIXME Output is not updated after receiving response -->
@@ -55,7 +53,7 @@
       </div>
       <div v-else>
         {{ `${wrapper.boardType}-${wrapper.io} => ` }}
-        <!-- FIXME Input only updates upon DOM-Update by toggleButton
+        <!-- FIXME Input only updates upon DOM-Update by toggleButton -->
         <status-indicator
           :status="wrapper.state ? 'positive' : 'negative'"
           :pulse="wrapper.state ? true : false"
@@ -68,14 +66,8 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac
-        :ref="`vac${counter.id}`"
-        :leftTime="counter.seconds * 1000"
-        :autoStart="false"
-      >
-        <span slot="process" slot-scope="{ timeObj }">
-          {{ timeObj.ceil.s }}
-        </span>
+      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
+        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -145,9 +137,7 @@ export default {
       this.visuals.forEach(visual => {
         if (visual.board.boardType === "om8") {
           console.debug(
-            `Creating interval for ${visual.board.boardType} @ ${
-              visual.port.name
-            }`
+            `Creating interval for ${visual.board.boardType} @ ${visual.port.name}`
           );
           const interval = setInterval(() => {
             this.sendByte(visual.IO, visual.port.name);
@@ -160,9 +150,7 @@ export default {
           };
           this.pollings.push(polling);
           console.debug(
-            `Created interval [${polling.interval}] for ${
-              visual.board.boardType
-            } @ ${polling.port}`
+            `Created interval [${polling.interval}] for ${visual.board.boardType} @ ${polling.port}`
           );
         }
       });
@@ -219,9 +207,7 @@ export default {
         .post(this.paths.shift, payload)
         .then(response => {
           console.debug(
-            `Shift? Status-Code ${response.status} - ${
-              response.data.status
-            } [${pin}]@${port}`
+            `Shift? Status-Code ${response.status} - ${response.data.status} [${pin}]@${port}`
           );
           this.response = response.data;
         })
@@ -290,9 +276,7 @@ export default {
       );
       if (this.pollings[index].active) {
         console.debug(
-          `Clearing interval [${this.pollings[index].interval}] of ${
-            visual.board.boardType
-          } @ ${visual.port.name}`
+          `Clearing interval [${this.pollings[index].interval}] of ${visual.board.boardType} @ ${visual.port.name}`
         );
         clearInterval(this.pollings[index].interval);
         this.pollings[index].active = false;
@@ -302,9 +286,7 @@ export default {
         }, 5000);
         this.pollings[index].active = true;
         console.debug(
-          `Created interval [${this.pollings[index].interval}] for ${
-            visual.board.boardType
-          } @ ${visual.port.name}`
+          `Created interval [${this.pollings[index].interval}] for ${visual.board.boardType} @ ${visual.port.name}`
         );
       }
     }
