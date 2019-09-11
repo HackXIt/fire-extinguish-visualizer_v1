@@ -3,10 +3,10 @@
     <h1>This is the main Page.</h1>
 
     <h2>Testing area:</h2>
-    <br />Simple Data Example:
+    <h3>Simple Data Example</h3>
     <br />
     <div class="container">
-      <div class="label">
+      <div class="simpleLabel">
         <button @click="simpleXOR()">XOR</button>
         {{ data }}
       </div>
@@ -24,7 +24,7 @@
         <status-indicator :status="bit ? 'positive' : 'negative'" />
       </vue-draggable-resizable>
     </div>
-    <br />Flatted Data Example (Array in Obj)
+    <h3>Flatted Data Example (Array in Obj)</h3>
     <div class="container">
       <vue-draggable-resizable
         class="label"
@@ -36,7 +36,8 @@
         :draggable="false"
       >
         <button @click="nestedArrayXOR(obj.name)">XOR -> {{ obj.name }}</button>
-        {{ obj.states }}
+        <br />
+        {{ Object.values(obj.states) }}
       </vue-draggable-resizable>
       <vue-draggable-resizable
         class="inner"
@@ -61,7 +62,7 @@
         </div>
       </vue-draggable-resizable>
     </div>
-    <br />Flattened Data Example (Object in Object)
+    <h3>Flattened Data Example (Object in Object)</h3>
     <div class="container">
       <vue-draggable-resizable
         class="label"
@@ -73,7 +74,8 @@
         :draggable="false"
       >
         <button @click="nestedObjectXOR(obj.name)">XOR -> {{ obj.name }}</button>
-        {{ obj.states }}
+        <br />
+        {{ Object.values(obj.states) }}
       </vue-draggable-resizable>
       <vue-draggable-resizable
         class="inner"
@@ -185,6 +187,7 @@ export default {
       }
     },
     flattenStatesArray(objects) {
+      console.debug("Executing flattenStatesArray...");
       return objects.flatMap((obj, objIndex) => {
         return obj.states.map((state, index) => {
           return {
@@ -198,6 +201,7 @@ export default {
       });
     },
     flattenStatesObj(objects) {
+      console.debug("Executing flattenStatesObj...");
       return objects.flatMap((obj, objIndex) => {
         return Object.keys(obj.states).map(io => {
           return {
@@ -226,15 +230,14 @@ export default {
   top: 0px;
   left: 0px;
 }
-.outer {
-  /* display: contents; as suggested */
-  height: inherit;
-  width: inherit;
-  position: absolute;
+.simpleLabel {
+  height: 50px;
+  width: 20%;
+  border: 1px dashed green;
 }
 .label {
   border: 1px dashed green;
-  padding: 10px;
+  padding: 5px;
   width: 20%;
 }
 /* // This is the css for vue-draggable-resizable */
