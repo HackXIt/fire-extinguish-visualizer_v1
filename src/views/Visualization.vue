@@ -53,7 +53,6 @@
       </div>
       <div v-else>
         {{ `${wrapper.boardType}-${wrapper.io} => ` }}
-        <!-- FIXME Input only updates upon DOM-Update by toggleButton -->
         <status-indicator
           :status="wrapper.state ? 'positive' : 'negative'"
           :pulse="wrapper.state ? true : false"
@@ -67,7 +66,11 @@
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
       <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
-        <span slot="process" slot-scope="{ timeObj }">{{ timeObj.ceil.s }}</span>
+        <span slot="process" slot-scope="{ timeObj }">
+          {{
+          timeObj.ceil.s
+          }}
+        </span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -107,6 +110,7 @@ export default {
           this.visuals[visualIndex].pinStates[io] =
             newResponse.pinStates[io - 1];
         });
+        this.$forceUpdate();
       },
       deep: true
     }
