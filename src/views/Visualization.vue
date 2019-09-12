@@ -147,21 +147,14 @@ export default {
       this.visuals.forEach(visual => {
         if (visual.board.boardType === "om8") {
           console.debug(
-            `Creating interval for ${visual.board.boardType} @ ${visual.port.name}`
+            `Adding polling object for ${visual.board.boardType} @ ${visual.port.name}`
           );
-          const interval = setInterval(() => {
-            this.sendByte(visual.IO, visual.port.name);
-          }, 5000);
           const polling = {
-            interval: interval,
             id: visual.port.id,
             port: visual.port.name,
-            active: true
+            active: false
           };
           this.pollings.push(polling);
-          console.debug(
-            `Created interval [${polling.interval}] for ${visual.board.boardType} @ ${polling.port}`
-          );
         }
       });
     }
