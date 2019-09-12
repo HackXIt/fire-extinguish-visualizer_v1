@@ -105,6 +105,7 @@ export default {
         const visualIndex = this.visuals.findIndex(
           visual => visual.port.name === newResponse.port
         );
+        // NOTE Won't rerender by itself: https://vuejs.org/v2/guide/list.html#Caveats
         this.visuals[visualIndex].IO.forEach(io => {
           this.visuals[visualIndex].pinStates[io] =
             newResponse.pinStates[io - 1];
@@ -199,6 +200,9 @@ export default {
     });
   },
   methods: {
+    // FIXME Must fix NGINX.conf, getting tons of CORS errors
+    // https://stackoverflow.com/questions/42681311/flask-access-control-allow-origin-for-multiple-urls
+    //
     sendByte(pin, port) {
       console.debug(`Setting ${pin} on ${port}`);
       const payload = {
