@@ -12,9 +12,8 @@
       <b>Board:</b>
       {{
       `${visual.board.boardType.toUpperCase()} [${visual.IO.length} x ${
-      visual.board.rpiType
-      }(s)]`
-      }}
+      visual.board.rpiType}`
+      }}{{ visual.IO.length > 1 ? 's]' : ']'}}
       <br />
       <b>Name:</b>
       {{ visual.port.name }}
