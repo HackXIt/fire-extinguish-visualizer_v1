@@ -10,6 +10,7 @@
         v-if="error.sel.val"
         v-text="error.sel.msg"
       />
+      <b v-text="'Board:'" /> <br/>
       <select id="boardSelect" v-model="variantSelection">
         <option
           v-for="variant in variants"
@@ -32,7 +33,8 @@
         for="boardAmount"
         v-if="error.num.val"
         v-text="error.num.msg"
-      />
+      /> <br />
+      <b v-text="'Port:'" /> <br />
       <select id="portSelect" v-model="portSelection">
         <option
           v-for="port in ports"
@@ -41,14 +43,15 @@
           :disabled="!port.available"
           >{{ port.name }}</option
         >
-      </select>
+      </select> <br />
+      <b v-text="'IO-Amount'" /> <br />
       <input
         type="number"
         id="boardAmount"
         v-model.number="amount"
         min="1"
         max="8"
-      />
+      /> <br />
       <input type="submit" value="generate" />
     </form>
   </div>
@@ -215,6 +218,6 @@ export default {
 
 <style lang="scss" scoped>
 .board-select {
-  display: contents;
+  text-align: left;
 }
 </style>
