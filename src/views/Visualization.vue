@@ -105,7 +105,6 @@ export default {
         const visualIndex = this.visuals.findIndex(
           visual => visual.port.name === newResponse.port
         );
-        // NOTE Won't rerender by itself: https://vuejs.org/v2/guide/list.html#Caveats
         this.visuals[visualIndex].IO.forEach(io => {
           this.visuals[visualIndex].pinStates[io] =
             newResponse.pinStates[io - 1];
@@ -162,36 +161,7 @@ export default {
   },
   beforeDestroy() {
     console.debug("Sent cleanup request to FireFlask");
-    axios
-      .post(this.paths.cleanup)
-      .then(response => {
-        console.debug(
-          `Cleanup? Status-Code: ${response.status} - ${response.data.status}`
-        );
-      })
-      .catch(error => {
-        // Error 😨
-        if (error.response) {
-          /*
-           * The request was made and the server responded with a
-           * status code that falls out of the range of 2xx
-           */
-          console.error(error.response.data);
-          console.error(error.response.status);
-          console.error(error.response.headers);
-        } else if (error.request) {
-          /*
-           * The request was made but no response was received, `error.request`
-           * is an instance of XMLHttpRequest in the browser and an instance
-           * of http.ClientRequest in Node.js
-           */
-          console.error(error.request);
-        } else {
-          // Something happened in setting up the request and triggered an Error
-          console.error("Error", error.message);
-        }
-        console.error(error.config);
-      });
+    this.axiosRequest(null, this.paths.cleanup, "POST");
     this.pollings.forEach(polling => {
       console.debug(
         `Clearing interval [${polling.interval}] of ${polling.port}`
@@ -200,47 +170,55 @@ export default {
     });
   },
   methods: {
-    // FIXME Must fix NGINX.conf, getting tons of CORS errors
-    // https://stackoverflow.com/questions/42681311/flask-access-control-allow-origin-for-multiple-urls
-    //
     sendByte(pin, port) {
       console.debug(`Setting ${pin} on ${port}`);
-      const payload = {
+      var payload = {
         pin,
         port
       };
       console.debug(payload);
-      axios
-        .post(this.paths.shift, payload)
-        .then(response => {
-          console.debug(
-            `Shift? Status-Code ${response.status} - ${response.data.status} [${pin}]@${port}`
-          );
-          this.response = response.data;
-        })
-        .catch(error => {
-          // Error 😨
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            console.error(error.response.data);
-            console.error(error.response.status);
-            console.error(error.response.headers);
-          } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            console.error(error.request);
-          } else {
-            // Something happened in setting up the request and triggered an Error
-            console.error("Error", error.message);
-          }
-          console.error(error.config);
-        });
+      this.axiosRequest(payload, this.paths.shift, "POST");
+    },
+    axiosRequest(payload, path, request) {
+      if (request === "POST") {
+        axios
+          .post(path, payload)
+          .then(response => {
+            if (payload) {
+              console.debug(
+                `${path}? \n Status-Code ${response.status} - ${response.data.status} [${payload.pin}]@${payload.port}`
+              );
+              this.response = response.data;
+            } else {
+              console.debug(
+                `${path}? \n Status-Code ${response.status} - ${response.data.status}`
+              );
+            }
+          })
+          .catch(error => {
+            // Error 😨
+            if (error.response) {
+              /*
+               * The request was made and the server responded with a
+               * status code that falls out of the range of 2xx
+               */
+              console.error(error.response.data);
+              console.error(error.response.status);
+              console.error(error.response.headers);
+            } else if (error.request) {
+              /*
+               * The request was made but no response was received, `error.request`
+               * is an instance of XMLHttpRequest in the browser and an instance
+               * of http.ClientRequest in Node.js
+               */
+              console.error(error.request);
+            } else {
+              // Something happened in setting up the request and triggered an Error
+              console.error("Error", error.message);
+            }
+            console.error(error.config);
+          });
+      }
     },
     switchCountdown(ref, id) {
       // console.debug(this.$refs[ref][0])
