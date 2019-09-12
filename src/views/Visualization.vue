@@ -23,7 +23,8 @@
         v-if="visual.board.rpiType === 'input'"
         @click="togglePolling(visual)"
       >{{ `Polling: ${pollings[visual.port.id - 1].active ? "On" : "Off"}` }}</button>
-      <br />
+      <br />Draggable?
+      <input v-model="draggable[visual.port.id]" type="checkbox" />
     </div>
     <vue-draggable-resizable
       v-for="wrapper in flattenVisuals(visuals)"
@@ -31,7 +32,7 @@
       class="pin"
       :parent="true"
       :resizable="false"
-      :draggable="true"
+      :draggable="draggable[wrapper.id]"
       :h="100"
       :w="100"
       :x="wrapper.pos * 100"
@@ -85,6 +86,12 @@ export default {
   data() {
     return {
       visuals: [],
+      draggable: {
+        1: true,
+        2: true,
+        3: true,
+        4: true
+      },
       counters: [],
       paths: {
         // FIXME Network-Error when using localhost as IP
@@ -234,7 +241,7 @@ export default {
         return visual.IO.map((io, pos) => {
           return {
             port: visual.port.name,
-            portID: visual.port.id,
+            id: visual.port.id,
             boardType: visual.board.boardType,
             ioType: visual.board.rpiType,
             io: io,
