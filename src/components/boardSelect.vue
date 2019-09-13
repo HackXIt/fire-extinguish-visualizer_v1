@@ -4,54 +4,40 @@
       <!-- TODO Use vue-multiselect plugin for a better selection 
       https://vue-multiselect.js.org/
       -->
-      <label
-        class="error-msg"
-        for="boardSelect"
-        v-if="error.sel.val"
-        v-text="error.sel.msg"
-      />
-      <b v-text="'Board:'" /> <br/>
+      <label class="error-msg" for="boardSelect" v-if="error.sel.val" v-text="error.sel.msg" />
+      <b v-text="'Board'" />
+      <br />
       <select id="boardSelect" v-model="variantSelection">
         <option
           v-for="variant in variants"
           :key="variant.id"
           :value="variant"
-          >{{ variant.placeholder }}</option
-        >
+        >{{ variant.placeholder }}</option>
       </select>
+      <!-- TODO Add some sort of picture preview here maybe?
       <p v-if="selected">
         UPLOAD OF IMAGES GOES HERE (DEBUG)
         <img :src="variantSelection.imgActive" />
         <img :src="variantSelection.imgPassive" />
-        <img
-          v-if="variantSelection.imgPreActive"
-          :src="variantSelection.imgPreActive"
-        />
-      </p>
-      <label
-        class="error-msg"
-        for="boardAmount"
-        v-if="error.num.val"
-        v-text="error.num.msg"
-      /> <br />
-      <b v-text="'Port:'" /> <br />
+        <img v-if="variantSelection.imgPreActive" :src="variantSelection.imgPreActive" />
+      </p>-->
+      <label class="error-msg" for="boardAmount" v-if="error.num.val" v-text="error.num.msg" />
+      <br />
+      <b v-text="'Port'" />
+      <br />
       <select id="portSelect" v-model="portSelection">
         <option
           v-for="port in ports"
           :key="port.id"
           :value="port"
           :disabled="!port.available"
-          >{{ port.name }}</option
-        >
-      </select> <br />
-      <b v-text="'IO-Amount'" /> <br />
-      <input
-        type="number"
-        id="boardAmount"
-        v-model.number="amount"
-        min="1"
-        max="8"
-      /> <br />
+        >{{ port.name }}</option>
+      </select>
+      <br />
+      <b v-text="'IO-Amount'" />
+      <br />
+      <input type="number" id="boardAmount" v-model.number="amount" min="1" max="8" />
+      <br />
       <input type="submit" value="generate" />
     </form>
   </div>
@@ -208,9 +194,10 @@ export default {
     eventBus.$on("delete-submission", item => {
       this.ports[item.portId - 1].available = true;
     });
-    eventBus.$on("disable-port", port => {
-      console.debug(`Port-Selection for Port ${port} disabled`);
-      this.ports[port - 1].available = false;
+    eventBus.$on("disable-port", id => {
+      console.debug(`Port-Selection for Port ${id} disabled`);
+      const index = (this.ports.find(obj => obj.id === id).available = false);
+      // this.ports[id - 1].available = false;
     });
   }
 };
@@ -219,5 +206,8 @@ export default {
 <style lang="scss" scoped>
 .board-select {
   text-align: left;
+  margin: auto;
+  position: relative;
+  left: 100px;
 }
 </style>
