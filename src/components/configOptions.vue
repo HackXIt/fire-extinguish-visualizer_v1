@@ -3,20 +3,21 @@
     <div
       :class="`port${submission.port.id}`"
       v-for="(submission, index) in submissions"
-      :key="index"
+      :key="`${submission.port.id}_${submission.port.name}`"
     >
       <button @click="removeSubmission(index)" class="deleteButton">
         <img :src="require('@/assets/delete.png')" />Delete
       </button>
-      {{ `Port ${submission.port.id}` }}
+      <br />
+      {{ `Port ${submission.port.id} [${submission.port.name}]` }}
       <click-to-edit v-model="submissions[index].description" />
       <label v-if="duplicateValue(submission.IO)" v-text="warning" />
       <click-to-edit
         v-for="n in submission.amount"
-        :key="n"
+        :key="`${n}-${submissions[index].IO[n - 1]}`"
         v-model.number="submissions[index].IO[n - 1]"
         :valueIsNumber="true"
-        :preText="submission.board.boardType.toUpperCase() + '-'"
+        :preText="`[${n}] => ${submission.board.boardType.toUpperCase()}-`"
       />
 
       <!-- TODO make Activation of IO-A dependant/reactive to IO-B
@@ -106,6 +107,8 @@ export default {
 
 <style lang="scss" scoped>
 .deleteButton {
+  position: relative;
+  left: 0px;
   background-color: red;
   border: none;
   color: black;
