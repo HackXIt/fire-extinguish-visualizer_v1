@@ -52,7 +52,13 @@ export default {
     };
   },
   watch: {
-    value: () => {
+    // NOTE This must be "function()" and not an arrow function "() =>"
+    /*
+     Arrow functions have some important differences. 
+     For example, they do not bind their own values of this
+     https://stackoverflow.com/questions/24900875/whats-the-meaning-of-an-arrow-formed-from-equals-greater-than-in-javas
+    */
+    value: function() {
       this.valueLocal = this.value;
     }
   },
