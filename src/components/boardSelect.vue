@@ -4,7 +4,12 @@
       <!-- TODO Use vue-multiselect plugin for a better selection 
       https://vue-multiselect.js.org/
       -->
-      <label class="error-msg" for="boardSelect" v-if="error.sel.val" v-text="error.sel.msg" />
+      <label
+        class="error-msg"
+        for="boardSelect"
+        v-if="error.sel.val"
+        v-text="error.sel.msg"
+      />
       <b v-text="'Board'" />
       <br />
       <select id="boardSelect" v-model="variantSelection">
@@ -12,7 +17,8 @@
           v-for="variant in variants"
           :key="variant.id"
           :value="variant"
-        >{{ variant.placeholder }}</option>
+          >{{ variant.placeholder }}</option
+        >
       </select>
       <!-- TODO Add some sort of picture preview here maybe?
       <p v-if="selected">
@@ -21,7 +27,12 @@
         <img :src="variantSelection.imgPassive" />
         <img v-if="variantSelection.imgPreActive" :src="variantSelection.imgPreActive" />
       </p>-->
-      <label class="error-msg" for="boardAmount" v-if="error.num.val" v-text="error.num.msg" />
+      <label
+        class="error-msg"
+        for="boardAmount"
+        v-if="error.num.val"
+        v-text="error.num.msg"
+      />
       <br />
       <b v-text="'Port'" />
       <br />
@@ -31,12 +42,19 @@
           :key="port.id"
           :value="port"
           :disabled="!port.available"
-        >{{ port.name }}</option>
+          >{{ port.name }}</option
+        >
       </select>
       <br />
       <b v-text="'IO-Amount'" />
       <br />
-      <input type="number" id="boardAmount" v-model.number="amount" min="1" max="8" />
+      <input
+        type="number"
+        id="boardAmount"
+        v-model.number="amount"
+        min="1"
+        max="8"
+      />
       <br />
       <input type="submit" value="generate" />
     </form>
@@ -196,8 +214,9 @@ export default {
     });
     eventBus.$on("disable-port", id => {
       console.debug(`Port-Selection for Port ${id} disabled`);
-      const index = (this.ports.find(obj => obj.id === id).available = false);
-      // this.ports[id - 1].available = false;
+      // TODO ??? forgot the idea behind this
+      // const index = (this.ports.find(obj => obj.id === id).available = false);
+      this.ports[id - 1].available = false;
     });
   }
 };
