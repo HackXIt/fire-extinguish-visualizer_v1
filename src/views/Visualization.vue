@@ -6,14 +6,15 @@
       class="label"
       :style="positionLabel(visual)"
     >
-      <b>Port:</b>
-      {{ `${visual.port.id}=${visual.port.name}` }}
+      <b>Port</b>
+      {{ `[${visual.port.id}]: ${visual.port.name}` }}
       <br />
       <b>Board:</b>
       {{
-      `${visual.board.boardType.toUpperCase()} [${visual.IO.length} x ${
-      visual.board.rpiType}`
-      }}{{ visual.IO.length > 1 ? 's]' : ']'}}
+        `${visual.board.boardType.toUpperCase()} [${visual.IO.length} x ${
+          visual.board.rpiType
+        }`
+      }}{{ visual.IO.length > 1 ? "s]" : "]" }}
       <br />
       <b>Name:</b>
       {{ visual.port.name }}
@@ -21,12 +22,21 @@
       <button
         v-if="visual.board.rpiType === 'input'"
         @click="togglePolling(visual)"
-      >{{ `Polling: ${pollings[visual.port.id - 1].active ? "On" : "Off"}` }}</button>
+      >
+        {{
+          `Polling: ${
+            pollings[pollings.findIndex(poll => poll.id === visual.port.id)]
+              .active
+              ? "On"
+              : "Off"
+          }`
+        }}
+      </button>
       <br />Draggable?
       <input v-model="draggable[visual.port.id]" type="checkbox" />
     </div>
     <vue-draggable-resizable
-      v-for="wrapper in flattenVisuals(visuals)"
+      v-for="wrapper in flatVisuals"
       :key="wrapper.key"
       class="pin"
       :parent="true"
@@ -35,14 +45,12 @@
       :h="100"
       :w="100"
       :x="wrapper.pos * 100"
-      :y="wrapper.objIndex * 100"
+      :y="(wrapper.id - 1) * 100"
     >
       <div v-if="wrapper.ioType === 'output'">
         <button @click="sendByte(wrapper.io, wrapper.port)">
           {{
-          `${wrapper.boardType.toUpperCase()}-${wrapper.io} (${
-          wrapper.state ? "Off" : "On"
-          })`
+            `${wrapper.port}[${wrapper.io}] (${wrapper.state ? "Off" : "On"})`
           }}
         </button>
         <status-indicator
@@ -51,7 +59,7 @@
         />
       </div>
       <div v-else>
-        {{ `${wrapper.boardType}-${wrapper.io} => ` }}
+        {{ `${wrapper.port}[${wrapper.io}] => ` }}
         <status-indicator
           :status="wrapper.state ? 'positive' : 'negative'"
           :pulse="wrapper.state ? true : false"
@@ -64,12 +72,14 @@
         @click="switchCountdown(`vac${counter.id}`, counter.id)"
         v-text="`Toggle ${counter.name} -> ${counter.state}`"
       />
-      <vac :ref="`vac${counter.id}`" :leftTime="counter.seconds * 1000" :autoStart="false">
-        <span slot="process" slot-scope="{ timeObj }">
-          {{
+      <vac
+        :ref="`vac${counter.id}`"
+        :leftTime="counter.seconds * 1000"
+        :autoStart="false"
+      >
+        <span slot="process" slot-scope="{ timeObj }">{{
           timeObj.ceil.s
-          }}
-        </span>
+        }}</span>
         <span slot="finish">Done!</span>
       </vac>
     </div>
@@ -85,6 +95,7 @@ export default {
   data() {
     return {
       visuals: [],
+      flatVisuals: {},
       draggable: {
         1: true,
         2: true,
@@ -111,22 +122,31 @@ export default {
         const visualIndex = this.visuals.findIndex(
           visual => visual.port.name === newResponse.port
         );
-        this.visuals[visualIndex].IO.forEach(io => {
-          this.visuals[visualIndex].pinStates[io] =
-            newResponse.pinStates[io - 1];
+        const visual = this.visuals[visualIndex];
+        visual.IO.forEach(io => {
+          visual.pinStates[io] = newResponse.pinStates[io - 1];
+          this.flatVisuals[`${visual.port.name}-${io}`].state =
+            visual.pinStates[io];
+          this.flatVisuals[`${visual.port.name}-${io}`].key = `${
+            visual.board.boardType
+          }-${io}@${visual.port.name} => ${visual.pinStates[io]}`;
         });
+        console.debug(visual);
+        this.visuals[visualIndex] = visual;
         this.$forceUpdate();
       },
       deep: true
     }
   },
-  mounted() {
+  beforeMount() {
+    console.debug("----Visualization beforeMounted----");
     if (localStorage.getItem("submissions")) {
       try {
         this.visuals = JSON.parse(localStorage.getItem("submissions"));
+        this.flattenVisuals(this.visuals);
       } catch (e) {
         // NOTE This destroys localStorage data if invalid
-        console.debug(e);
+        console.error(e);
         localStorage.removeItem("submissions");
       }
     }
@@ -146,7 +166,9 @@ export default {
       this.visuals.forEach(visual => {
         if (visual.board.boardType === "om8") {
           console.debug(
-            `Adding polling object for ${visual.board.boardType} @ ${visual.port.name}`
+            `Adding polling object for ${visual.board.boardType} @ ${
+              visual.port.name
+            }`
           );
           const polling = {
             id: visual.port.id,
@@ -157,6 +179,9 @@ export default {
         }
       });
     }
+  },
+  mounted() {
+    console.debug("----Mounted Visualization----");
   },
   beforeDestroy() {
     console.debug("Sent cleanup request to FireFlask");
@@ -185,12 +210,16 @@ export default {
           .then(response => {
             if (payload) {
               console.debug(
-                `${path}? \n Status-Code ${response.status} - ${response.data.status} [${payload.pin}]@${payload.port}`
+                `${path}? \n Status-Code ${response.status} - ${
+                  response.data.status
+                } [${payload.pin}]@${payload.port}`
               );
               this.response = response.data;
             } else {
               console.debug(
-                `${path}? \n Status-Code ${response.status} - ${response.data.status}`
+                `${path}? \n Status-Code ${response.status} - ${
+                  response.data.status
+                }`
               );
             }
           })
@@ -229,7 +258,7 @@ export default {
     },
     flattenVisuals(visuals) {
       console.debug("Flattening visuals...");
-      return visuals.flatMap((visual, index) => {
+      const fV = visuals.flatMap(visual => {
         return visual.IO.map((io, pos) => {
           return {
             port: visual.port.name,
@@ -239,11 +268,15 @@ export default {
             io: io,
             pos: pos,
             state: visual.pinStates[io],
-            objIndex: index,
-            key: `${visual.board.boardType}-${io}@${visual.port.port}`
+            key: `${visual.board.boardType}-${io}@${visual.port.name} => ${
+              visual.pinStates[io]
+            }`
           };
         });
       });
+      for (var i = 0; i < fV.length; i++) {
+        this.flatVisuals[`${fV[i].port}-${fV[i].io}`] = fV[i];
+      }
     },
     positionLabel(visual) {
       return {
@@ -260,7 +293,9 @@ export default {
       );
       if (this.pollings[index].active) {
         console.debug(
-          `Clearing interval [${this.pollings[index].interval}] of ${visual.board.boardType} @ ${visual.port.name}`
+          `Clearing interval [${this.pollings[index].interval}] of ${
+            visual.board.boardType
+          } @ ${visual.port.name}`
         );
         clearInterval(this.pollings[index].interval);
         this.pollings[index].active = false;
@@ -270,7 +305,9 @@ export default {
         }, 5000);
         this.pollings[index].active = true;
         console.debug(
-          `Created interval [${this.pollings[index].interval}] for ${visual.board.boardType} @ ${visual.port.name}`
+          `Created interval [${this.pollings[index].interval}] for ${
+            visual.board.boardType
+          } @ ${visual.port.name}`
         );
       }
     }
