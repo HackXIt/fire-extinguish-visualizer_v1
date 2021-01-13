@@ -1,1 +1,1 @@
-export const firePi = "localhost:80";
+export const firePi = "firepi.local:80";
